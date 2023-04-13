@@ -1,0 +1,122 @@
+# 项目文档的主标题
+site_name: 个人笔记
+# 作者
+site_author: 'danerlt'
+# 版权
+copyright: 'Copyright © danerlt. All rights reserved.'
+# 项目文档的描述
+site_description: danerlt的个人笔记
+# github 仓库名
+repo_name: danerlt/notes
+# github 仓库地址
+repo_url: 'https://github.com/danerlt/notes'
+# 是否每个目录都创建目录 这个设置false,渲染出来的图片路径就不会有多余的目录
+use_directory_urls: false
+
+# 主题
+theme:
+  name: material
+  # 覆盖mkdocs默认HTML模板的目录
+  custom_dir: overrides
+  language: zh
+  features:
+    - announce.dismiss # 提供已读功能
+    - content.action.edit
+    - content.action.view
+    - content.code.annotate
+    - content.code.copy  # 复制代码块到剪切板
+    # - content.tabs.link
+    - content.tooltips
+    # - header.autohide # 自动隐藏标题
+    # - navigation.expand
+    - navigation.top # 返回顶部
+    - navigation.footer # 页脚显示上一页 下一页
+    - navigation.indexes # 章节索引
+    # - navigation.instant
+    # - navigation.prune
+    # - navigation.tabs.sticky
+    - search.highlight # 搜索高亮
+    - search.share # 搜索共享
+    - search.suggest # 搜索建议
+    - toc.follow # 目录显示在右边
+    # - toc.integrate
+  # 调色板
+  palette:
+    # 颜色方案 默认为浅色模式
+    - scheme: default
+      # 主色调 用于标题、侧边栏、文本链接和其他几个组件
+      primary: purple  # 紫色
+      accent: blue # 蓝色
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  # 字体
+  font:
+    text: Roboto
+    code: Roboto Mono
+  favicon: assets/favicon.png
+  icon:
+    logo: logo
+
+# 插件
+plugins:
+  - search
+  - markdownextradata:
+      data: data
+
+# markdown扩展
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - meta
+  - footnotes
+  - codehilite
+  - extra
+  - md_in_html
+  - toc:
+      permalink: ⚓︎
+      toc_depth: 3
+  - pymdownx.arithmatex
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.mark
+  - pymdownx.tilde
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+  - pymdownx.details
+  - pymdownx.keys
+  - pymdownx.highlight:
+      linenums: true
+      linenums_style: pymdownx-inline
+  - pymdownx.smartsymbols
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.tabbed
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format ''
+
+
+extra_css:
+  - https://fastapi.tiangolo.com/css/termynal.css
+  - https://fastapi.tiangolo.com/css/custom.css
+extra_javascript:
+  - js/mathjax.js
+  - https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/7.12.1/polyfill.min.js
+  - https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.0/es5/tex-chtml.min.js
+  - https://fastapi.tiangolo.com/js/termynal.js
+  - https://fastapi.tiangolo.com/js/custom.js
