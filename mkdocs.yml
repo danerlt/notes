@@ -32,14 +32,14 @@ theme:
     - navigation.top # 返回顶部
     - navigation.footer # 页脚显示上一页 下一页
     - navigation.indexes # 章节索引
-    # - navigation.instant
-    # - navigation.prune
-    # - navigation.tabs.sticky
+    - navigation.tabs # 顶级章节显示在导航栏下面
+    - navigation.tabs.sticky # 导航标签将锁定在页眉下面，并且在向下滚动时始终保持可见。
+    - navigation.expand # 导航栏展开
     - search.highlight # 搜索高亮
     - search.share # 搜索共享
     - search.suggest # 搜索建议
-    - toc.follow # 目录显示在右边
-    # - toc.integrate
+    - toc.follow # 侧边栏会自动滚动
+    - toc.integrate # 文章类标题显示到右侧
   # 调色板
   palette:
     # 颜色方案 默认为浅色模式
@@ -60,7 +60,6 @@ theme:
   font:
     text: Roboto
     code: Roboto Mono
-  favicon: assets/favicon.png
   icon:
     logo: logo
 
