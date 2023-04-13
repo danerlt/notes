@@ -114,6 +114,7 @@ extra_css:
   - https://fastapi.tiangolo.com/css/termynal.css
   - https://fastapi.tiangolo.com/css/custom.css
 extra_javascript:
+  - https://cdnjs.loli.net/ajax/libs/pangu/3.3.0/pangu.min.js
   - js/mathjax.js
   - https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/7.12.1/polyfill.min.js
   - https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.0/es5/tex-chtml.min.js
