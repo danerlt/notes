@@ -119,8 +119,8 @@ devpi login root --password=''
 # 腾讯云
 # devpi  index root/pypi  "mirror_web_url_fmt=https://mirrors.cloud.tencent.com/pypi/simple/{name}/" "mirror_url=https://mirrors.cloud.tencent.com/pypi/simple/"
 
-# 默认设置成清华源
-devpi  index root/pypi  "mirror_web_url_fmt=https://pypi.tuna.tsinghua.edu.cn/simple/{name}/" "mirror_url=https://pypi.tuna.tsinghua.edu.cn/simple"
+# 默认设置豆瓣云
+devpi  index root/pypi  "mirror_web_url_fmt=https://pypi.douban.com/simple/{name}/" "mirror_url=https://pypi.douban.com/simple/"
 ```
 
 ![](images/Pip私有源/20221209153547.png)
