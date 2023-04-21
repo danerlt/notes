@@ -25,10 +25,10 @@ theme:
     - content.action.view
     - content.code.annotate
     - content.code.copy  # 复制代码块到剪切板
-    # - content.tabs.link
+    - content.tabs.link
     - content.tooltips
-    # - header.autohide # 自动隐藏标题
-    # - navigation.expand
+    - header.autohide # 自动隐藏标题
+    - navigation.expand
     - navigation.top # 返回顶部
     - navigation.footer # 页脚显示上一页 下一页
     - navigation.indexes # 章节索引
@@ -39,7 +39,6 @@ theme:
     - search.share # 搜索共享
     - search.suggest # 搜索建议
     - toc.follow # 侧边栏会自动滚动
-    - toc.integrate # 文章类标题显示到右侧
   # 调色板
   palette:
     # 颜色方案 默认为浅色模式
@@ -81,8 +80,11 @@ markdown_extensions:
   - extra
   - md_in_html
   - toc:
-      permalink: ⚓︎
+      # 在每个标题的末尾生成永久链接
+      permalink: '#'
       toc_depth: 3
+      # 替换生成的ID中的空格的字符
+      separator: "_"
   - pymdownx.arithmatex
   - pymdownx.betterem:
       smart_enable: all
