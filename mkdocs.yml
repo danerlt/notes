@@ -16,25 +16,27 @@ use_directory_urls: false
 # 主题
 theme:
   name: material
+#  name: mkdocs
   # 覆盖mkdocs默认HTML模板的目录
   custom_dir: overrides
   language: zh
   features:
     - announce.dismiss # 提供已读功能
-    - content.action.edit
-    - content.action.view
-    - content.code.annotate
+    #    - content.action.edit
+    #    - content.action.view
+    #    - content.code.annotate
     - content.code.copy  # 复制代码块到剪切板
-    - content.tabs.link
-    - content.tooltips
-    - header.autohide # 自动隐藏标题
-    - navigation.expand
+    #    - content.tabs.link
+    #    - content.tooltips
+    #    - navigation.expand
+    - navigation.instant # 即时加载
     - navigation.top # 返回顶部
     - navigation.footer # 页脚显示上一页 下一页
     - navigation.indexes # 章节索引
-    - navigation.tabs # 顶级章节显示在导航栏下面
+    - navigation.tabs # 导航栏显示在标题下面不显示在左侧
+    - navigation.path # 显示当前页面的路径
     - navigation.tabs.sticky # 导航标签将锁定在页眉下面，并且在向下滚动时始终保持可见。
-    - navigation.expand # 导航栏展开
+    #    - navigation.sections # 导航栏显示章节
     - search.highlight # 搜索高亮
     - search.share # 搜索共享
     - search.suggest # 搜索建议
@@ -62,11 +64,39 @@ theme:
   icon:
     logo: logo
 
+## 顶部导航栏
+nav:
+  - 归档: archive.md
+  - Python:
+      - Python基础: python/basic/
+      - 数据分析: python/data-analysis/
+      - 爬虫: python/spiders/
+      - web开发: python/web/
+  - 后端: backend/
+  - 算法: algorithm/
+  - 机器学习: machine-learning/
+  - 数据库: database/
+  - 运维: devops/
+  - 前端: frontend/
+  - 常用工具: tools/
+  - 常用命令: commands/
+  - 关于: about.md
+
+
+
+
+
 # 插件
 plugins:
   - search
+  - blog:
+      blog_dir: _posts
   - markdownextradata:
       data: data
+  - awesome-pages
+  - literate-nav:
+      nav_file: nav.md
+      implicit_index: true
 
 # markdown扩展
 markdown_extensions:
