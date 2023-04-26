@@ -89,8 +89,6 @@ nav:
 # 插件
 plugins:
   - search
-  - blog:
-      blog_dir: _posts
   - markdownextradata:
       data: data
   - awesome-pages
