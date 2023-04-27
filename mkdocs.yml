@@ -66,36 +66,16 @@ theme:
 
 ## 顶部导航栏
 nav:
-  - 归档: archive.md
-  - Python:
-      - Python基础: python/basic/
-      - 数据分析: python/data-analysis/
-      - 爬虫: python/spiders/
-      - web开发: python/web/
-  - 后端:
-      - Java: backend/Java/
-      - Go: backend/Go
-      - 中间件: backend/中间件
-      - 架构:
-          - 分布式: backend/架构/分布式/
-          - 架构设计: backend/架构/架构设计/
-          - 高并发: backend/架构/高并发/
-  - 算法:
-      - 算法基础: algorithm/basic/
-      - 排序算法: algorithm/sorts/
-      - 其他: algorithm/others/
-  - 人工智能:
-      - 数学: 人工智能/数学/
-      - 机器学习 : 人工智能/机器学习/
-      - 深度学习: 人工智能/深度学习/
-  - 数据库: database/
-  - 运维: devops/
-  - 前端: frontend/
-  - 常用工具: tools/
-  - 常用命令: command/
-  - 关于: about/
-
-
+  - Python: python/
+  - 后端: 后端/
+  - 算法: 算法/
+  - 人工智能: 人工智能/
+  - 数据库: 数据库/
+  - 运维: 运维/
+  - 前端: 前端/
+  - 常用工具: 常用工具/
+  - 常用命令: 常用命令/
+  - 关于: 关于/
 
 
 
