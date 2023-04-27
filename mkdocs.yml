@@ -83,6 +83,7 @@ nav:
   - 算法:
       - 算法基础: algorithm/basic/
       - 排序算法: algorithm/sorts/
+      - 其他: algorithm/others/
   - 人工智能:
       - 数学: 人工智能/数学/
       - 机器学习 : 人工智能/机器学习/
@@ -100,7 +101,13 @@ nav:
 
 # 插件
 plugins:
-  - search
+  # 搜索插件
+  - search:
+      lang: zh
+      separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
+  # 压缩html
+  - minify:
+      minify_html: true
   - markdownextradata:
       data: data
   - awesome-pages
@@ -152,13 +159,13 @@ markdown_extensions:
           format: !!python/name:pymdownx.superfences.fence_code_format ''
 
 
-extra_css:
-  - https://fastapi.tiangolo.com/css/termynal.css
-  - https://fastapi.tiangolo.com/css/custom.css
+#extra_css:
+#  - https://fastapi.tiangolo.com/css/termynal.css
+#  - https://fastapi.tiangolo.com/css/custom.css
 extra_javascript:
   - https://cdnjs.loli.net/ajax/libs/pangu/3.3.0/pangu.min.js
-  - js/mathjax.js
-  - https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/7.12.1/polyfill.min.js
-  - https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.0/es5/tex-chtml.min.js
-  - https://fastapi.tiangolo.com/js/termynal.js
-  - https://fastapi.tiangolo.com/js/custom.js
+  - assets/javascripts/mathjax.js
+#  - https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/7.12.1/polyfill.min.js
+#  - https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.0/es5/tex-chtml.min.js
+#  - https://fastapi.tiangolo.com/js/termynal.js
+#  - https://fastapi.tiangolo.com/js/custom.js
