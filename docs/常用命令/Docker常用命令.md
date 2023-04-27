@@ -1,4 +1,4 @@
-# Docker 命令
+# Docker命令
 
 ## 常用
 
@@ -27,7 +27,7 @@ docker save -o xxx.tar 镜像url
 docker load -i xxx.tar
 
 # docker 查看内存数
-docker stats --no-stream tolerance_test_litao --format "table {{.MemPerc}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.Name}}" | sed "s/%//g" | awk 'NR>1 {print $3}'
+docker stats --no-stream 容器名 --format "table {{.MemPerc}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.Name}}" | sed "s/%//g" | awk 'NR>1 {print $3}'
 
 # docker 替换容器启动命令 使用  --entrypoint 指定
 docker run -i -t --entrypoint bash harbor.xxx.com/yyy/imageclassification-custom-tf-preserver:release-1.0
@@ -219,3 +219,52 @@ docker exec -it nginx /bin/bash
 ## 参考链接
 
 [Docker 命令](https://www.kancloud.cn/xuthus/mynote/636478)
+
+
+
+
+
+
+
+
+
+
+
+
+
+markdown文件渲染错误
+
+
+
+我写了一个markdown文件用来记录docker常用的命令，其中一个命令是用来显示内存使用的命令，在mkdocs渲染的时候报错了
+
+markdown文件内容如下
+
+
+
+错误信息如下
+
+
+
+
+
+原文中这里是3个`符号，由于github格式文件我加了一个空格，实际上markdown中是3个空格
+
+
+
+
+
+是不是因为markdown 内容
+
+
+
+
+
+谢谢你，我把mkdocs.yaml的中关于`markdownextradata`的内容注释掉就可以了
+
+
+
+```
+#  - markdownextradata:
+#      data: data
+```

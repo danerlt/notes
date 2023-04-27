@@ -15,7 +15,8 @@ use_directory_urls: false
 
 # 主题
 theme:
-  name: material
+#  name: material
+  name: mkdocs
 #  name: mkdocs
   # 覆盖mkdocs默认HTML模板的目录
   custom_dir: overrides
@@ -88,8 +89,8 @@ plugins:
   # 压缩html
   - minify:
       minify_html: true
-  - markdownextradata:
-      data: data
+#  - markdownextradata:
+#      data: data
   - awesome-pages
   - literate-nav:
       nav_file: nav.md
