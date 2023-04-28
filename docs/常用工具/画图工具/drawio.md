@@ -13,6 +13,9 @@ drawio 是一个在线画图工具，可以画各种图，比如流程图、时�
 ![](https://danerlt-1258802437.cos.ap-chongqing.myqcloud.com/2023-04-28-EWkqzl.png)
 
 
+在画图的时候经常需要导入一下开源项目的icon，可以使用这个地址：[https://www.vectorlogo.zone/](https://www.vectorlogo.zone/) 将
+icon 的svg 下载下来然后拖入到 drawio 中即可。
+
 
 ## 参考链接
 
