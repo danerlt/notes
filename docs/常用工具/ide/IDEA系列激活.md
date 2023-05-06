@@ -2,6 +2,9 @@
 
 以 WebStorm 2022.2.3 为例
 
+2023.3.1 版本的激活参考 [IntelliJ IDEA破解安装激活最新教程（附破解工具及激活码）](https://chenjunan.top/detail/Detail?id=15)
+
+
 ## 安装 WebStorm
 
 点击 `WebStorm-2022.2.3.exe`,然后点击`next`
