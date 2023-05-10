@@ -3,6 +3,8 @@
 
 网站链接: [https://danerlt.github.io/notes/](https://danerlt.github.io/notes/)
 
+![效果图](https://danerlt-1258802437.cos.ap-chongqing.myqcloud.com/2023-05-09-345dzA.png)
+
 ## 1. 为什么要写这个笔记
 
 1. 为了方便自己查找
