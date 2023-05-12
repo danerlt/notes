@@ -95,6 +95,8 @@ plugins:
   - literate-nav:
       nav_file: nav.md
       implicit_index: true
+  # jupyter notebook插件
+  - mkdocs-jupyter
 
 # markdown扩展
 markdown_extensions:
