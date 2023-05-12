@@ -20,6 +20,19 @@ http://127.0.0.1:3141/admin/pypi/+simple/
 
 ```
 
+永久设置 pip 镜像源，以阿里云为例
+```bash
+mkdir ~/.pip
+
+cat > ~/.pip/pip.conf <<EOF
+[global]
+index-url = https://mirrors.aliyun.com/pypi/simple/
+[install]
+trusted-host = mirrors.aliyun.com
+EOF
+ 
+```
+
 ## 常用命令
 ### pip
 ```bash
