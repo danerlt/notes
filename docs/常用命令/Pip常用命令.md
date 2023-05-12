@@ -21,16 +21,34 @@ http://127.0.0.1:3141/admin/pypi/+simple/
 ```
 
 永久设置 pip 镜像源，以阿里云为例
+
+Linux上
 ```bash
 mkdir ~/.pip
 
 cat > ~/.pip/pip.conf <<EOF
 [global]
-index-url = https://mirrors.aliyun.com/pypi/simple/
+index-url = https://pypi.mirrors.ustc.edu.cn/simple/
+extra-index-url=
+        https://pypi.douban.com/simple
+        https://mirrors.cloud.tencent.com/pypi/simple/
+        https://mirrors.aliyun.com/pypi/simple/
+
 [install]
 trusted-host = mirrors.aliyun.com
 EOF
  
+```
+windows上
+
+新建一个`pip.ini`文件，文件路径为`C:\ProgramData\pip\pip.ini`，内容如下：
+```ini
+[global]
+index-url = https://pypi.mirrors.ustc.edu.cn/simple/
+extra-index-url=
+        https://pypi.douban.com/simple/
+        https://mirrors.cloud.tencent.com/pypi/simple/
+        https://mirrors.aliyun.com/pypi/simple/
 ```
 
 ## 常用命令
@@ -41,6 +59,9 @@ python3 -m pip install --upgrade pip
 
 # 查看pip版本
 pip3 --version
+
+# 查看配置文件路径
+pip -v config list
 
 # 使用pip的时候打印详细信息
 pip3 install -vvv xxx
