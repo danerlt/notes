@@ -28,14 +28,7 @@ mkdir ~/.pip
 
 cat > ~/.pip/pip.conf <<EOF
 [global]
-index-url = https://pypi.mirrors.ustc.edu.cn/simple/
-extra-index-url=
-        https://pypi.douban.com/simple
-        https://mirrors.cloud.tencent.com/pypi/simple/
-        https://mirrors.aliyun.com/pypi/simple/
-
-[install]
-trusted-host = mirrors.aliyun.com
+index-url = https://pypi.douban.com/simple/
 EOF
  
 ```
@@ -44,11 +37,7 @@ windows上
 新建一个`pip.ini`文件，文件路径为`C:\ProgramData\pip\pip.ini`，内容如下：
 ```ini
 [global]
-index-url = https://pypi.mirrors.ustc.edu.cn/simple/
-extra-index-url=
-        https://pypi.douban.com/simple/
-        https://mirrors.cloud.tencent.com/pypi/simple/
-        https://mirrors.aliyun.com/pypi/simple/
+index-url =https://pypi.douban.com/simple/
 ```
 
 ## 常用命令
