@@ -5,20 +5,21 @@
 常用的 Pip 私有源:
 
 ```
-# 清华大学pip源
-https://pypi.tuna.tsinghua.edu.cn/simple/
-
-# 阿里云pip源
-https://mirrors.aliyun.com/pypi/simple/
+# 豆瓣(douban) 
+https://pypi.douban.com/simple/
 
 # 腾讯云pip源
 https://mirrors.cloud.tencent.com/pypi/simple/
 
-# 豆瓣(douban) 
-https://pypi.douban.com/simple/
+# 清华大学pip源
+https://pypi.tuna.tsinghua.edu.cn/simple/
 
 # 中国科技大学 
 https://pypi.mirrors.ustc.edu.cn/simple/
+
+# 阿里云pip源
+https://mirrors.aliyun.com/pypi/simple/
+
 ```
 
 
@@ -27,7 +28,11 @@ https://pypi.mirrors.ustc.edu.cn/simple/
 
 
 
-总结: 下载速度, 清华大学源 =中国科技大学>豆瓣>腾讯云 > 阿里云 ,但是清华大学源和中国科技大学的源不能成功安装, 最稳的办法还是使用豆瓣源.
+总结: 下载速度, 清华大学源≈中国科技大学>豆瓣>腾讯云>阿里云。
+
+但是清华大学 pip 源和中国科技大学的 pip 源有下载量限制，下载包的大小超过了限制，会封 IP 导致安装失败，如果下载的包比较小可以使用。
+
+日常使用中，豆瓣源的速度也是可以接受的，所以我一般使用豆瓣源。
 
 具体测试如下:
 
