@@ -357,4 +357,4 @@ https://juejin.cn/post/6994380597535703053
 *   [devpi/devpi: Python PyPi staging server and packaging, testing, release tool (github.com)](https://github.com/devpi/devpi)
 *   [devpi搭建pip源服务器 - 博客 - 编程圈 (bianchengquan.com)](https://www.bianchengquan.com/article/602635.html)
 *   [使用私有的PyPI仓库源突破网络限制 – 北凉柿子 (beiliangshizi.com)](http://www.beiliangshizi.com/%3Fp%3D556)
-    [使用devpi来搭建缓存镜像源服务器 (daimajiaoliu.com)](https://daimajiaoliu.com/daima/4eee7659a900404)
+*   [使用devpi来搭建缓存镜像源服务器 (daimajiaoliu.com)](https://daimajiaoliu.com/daima/4eee7659a900404)
