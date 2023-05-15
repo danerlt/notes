@@ -659,7 +659,7 @@ python setup.py upload
 
 
 
-## 参考连接
+## 参考链接
 
 -   [王炳明](https://www.zhihu.com/people/wongbingming) [花了两天，终于把 Python 的 setup.py 给整明白了](https://zhuanlan.zhihu.com/p/276461821)
 
