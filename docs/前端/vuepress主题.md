@@ -16,13 +16,14 @@ Github 地址: [https://github.com/xugaoyi/vuepress-theme-vdoing](https://github
 
 效果图如下:
 
-![image-20230417160524258](images/前端开发/image-20230417160524258.png)
+![](https://danerlt-1258802437.cos.ap-chongqing.myqcloud.com/2023-05-15-idZDhs.png)
+
 
 
 
 ## vuepress-theme-hope
 
-Github 地址: https://github.com/vuepress-theme-hope/vuepress-theme-hope
+Github 地址: [https://github.com/vuepress-theme-hope/vuepress-theme-hope](https://github.com/vuepress-theme-hope/vuepress-theme-hope)
 
 - star数量: 1.1k
 - fork数量: 448
@@ -38,13 +39,14 @@ Github 地址: https://github.com/vuepress-theme-hope/vuepress-theme-hope
 
 效果图如下
 
-![image-20230417161315231](images/前端开发/image-20230417161315231.png)
+![](https://danerlt-1258802437.cos.ap-chongqing.myqcloud.com/2023-05-15-GKzFq3.png)
+
 
 
 
 ## vuepress-theme-reco
 
-Github地址: https://github.com/vuepress-reco/vuepress-theme-reco-1.x
+Github地址: [https://github.com/vuepress-reco/vuepress-theme-reco-1.x](https://github.com/vuepress-reco/vuepress-theme-reco-1.x)
 
 - star数量: 1.6k
 - fork数量: 327
@@ -59,8 +61,8 @@ Github地址: https://github.com/vuepress-reco/vuepress-theme-reco-1.x
 效果图如下
 
 
+![](https://danerlt-1258802437.cos.ap-chongqing.myqcloud.com/2023-05-15-rrXhUK.png)
 
-![image-20230417161921520](images/前端开发/image-20230417161921520.png)
 
 
 
@@ -68,19 +70,19 @@ Github地址: https://github.com/vuepress-reco/vuepress-theme-reco-1.x
 
 Github地址: https://github.com/vuepress-reco/vuepress-theme-reco
 
-- star数量: 312
-- fork数量: 76
-- issuse数量:40/88
-- PR 数量: 1/24
-- commit 数量: 477
-- 贡献人数: 1
-- 使用人数 154
+- star数量: 326
+- fork数量: 84
+- issuse数量:36/98
+- PR 数量: 0/30
+- commit 数量: 518
+- 贡献人数: 10
+- 使用人数 168
 
--   上次更新: 2023-04-15
+-   上次更新: 2023-05-15
 
 效果图如下
 
-![image-20230417162801754](images/前端开发/image-20230417162801754.png)
+![](https://danerlt-1258802437.cos.ap-chongqing.myqcloud.com/2023-05-15-KuLGlW.png)
 
 
 
@@ -96,4 +98,4 @@ Github地址: https://github.com/vuepress-reco/vuepress-theme-reco
 
 效果图
 
-![image-20230417163204737](images/前端开发/image-20230417163204737.png)
+![](https://danerlt-1258802437.cos.ap-chongqing.myqcloud.com/2023-05-15-KPOgkA.png)
