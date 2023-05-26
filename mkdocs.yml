@@ -77,7 +77,7 @@ nav:
   - 常用工具: 常用工具/
   - 常用命令: 常用命令/
   - 其他: 其他/
-  - 关于: 关于/
+  - 关于1111: 关于/
 
 
 # 插件
@@ -142,7 +142,8 @@ markdown_extensions:
           format: !!python/name:pymdownx.superfences.fence_code_format ''
 
 
-#extra_css:
+extra_css:
+  - assets/stylesheets/custom.css
 #  - https://fastapi.tiangolo.com/css/termynal.css
 #  - https://fastapi.tiangolo.com/css/custom.css
 extra_javascript:
