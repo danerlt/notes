@@ -141,6 +141,8 @@ pandoc -s example.md -o target.docx --reference-doc templ.docx
 
 >   这里有一份[我自己调好的样式模板文件](https://pan.baidu.com/s/12V00on6SwIan25tVrcytVQ)，提取码`cnn9`： 左边是 markdown ，右边是 word![my-reference-style](https://danerlt-1258802437.cos.ap-chongqing.myqcloud.com/images/FmbQWYvbJrWxqckdA58AmJVdlAcF)
 
+> 或者点击这里下载：[下载模板文件](templ.docx)
+
 使用这个方法还有一些不完美的地方，目前我也没有去解决，引用语法里面添加列表和图片在word里面渲染不正常。
 
 ## 六、添加封面图和目录
