@@ -179,6 +179,172 @@ $ docker compose run -e DEBUG web python console.py
 容器中DEBUG变量的值取自Compose运行时所在shell中相同变量的值。
 
 
+### 样例
+
+假设有一个`cdp`项目，其目录结构如下:
+
+```console
+[root@host cdp]# ll -al
+total 32
+drwxr-xr-x 3 root root 4096 May 19 10:56 .
+drwx------ 3 hive livy 4096 May 18 16:51 ..
+-rw-r--r-- 1 root root  727 May 19 10:56 cdp-service-swap.conf
+-rw-r--r-- 1 root root  879 May 18 17:39 cdp-web.env
+-rw-r--r-- 1 root root 1347 May 18 17:39 docker-compose.yaml
+-rw-r--r-- 1 root root  914 May 18 17:42 .env
+-rw-r--r-- 1 root root 1021 May 18 17:41 common.env
+```
+
+其中`common.env`文件内容如下：
+```text
+# 公共配置
+TZ=Asia/Shanghai
+# MySQL数据库配置
+# MySQL数据库用户名
+SPRING_DATASOURCE_USERNAME=root
+# MySQL数据库密码
+SPRING_DATASOURCE_PASSWORD=123456
+```
+
+其中`.env`文件内容如下：
+```text
+# RSYNC服务配置
+# RSYNC服务镜像
+RSYNC_IMAGE=harbor_domin/rsync:vx.y.z
+# rsyncd的服务地址
+RSYNC_DOMAIN_1=127.0.0.1
+#RSYNC_DOMAIN_2=127.0.0.1
+#RSYNC_DOMAIN_3=127.0.0.1
+
+# ElasticSearch服务配置
+ES_IMAGE=harbor_domin/es:vx.y.z
+# ES挂载目录
+ES_VOLUME=/data/docker/volumes/es
+# ES REST服务端口
+ES_REST_PORT=9200
+# ES内部通信端口
+ES_INTERNAL_PORT=9300
+
+# svn服务配置
+SVN_IMAGE=harbor_domin/svn:vx.y.z
+# svn挂载目录
+SVN_VOLUME=/data/docker/volumes/svn
+# svn服务端口
+SVN_PORT=80
+
+# cdp-es服务配置
+# cdp-es服务镜像
+CDP_ES_IMAGE=harbor_domin/cdp-es:vx.y.z
+
+# cdp-web服务配置
+# cdp-web服务镜像
+CDP_WEB_IMAGE=harbor_domin/cdp-web:vx.y.z
+
+# cdp-service服务配置
+# cdp-service服务镜像
+CDP_SERVICE_IMAGE=harbor_domin/cdp-service:vx.y.z
+# cdp-service服务MySQL配置文件
+CDP_SERVICE_VOLUME=./cdp-service-swap.conf
+```
+
+
+其中`cdp-web.env`文件内容如下：
+```text
+SPRING_DATASOURCE_URL=jdbc:mysql://domain.db:3306/db_cdp_web?characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai&zeroDateTimeBehavior=convertToNull&connectTimeout=6000&socketTimeout=6000
+
+```
+
+其中`cdp-service-swap.conf`文件内容如下：
+```text
+- connectionURL : jdbc:mysql://domain.db:3306/db_cdp_service?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false
+  driversClass : com.mysql.jdbc.Driver
+  username : root
+  password : 123456
+  minPoolSize : 1
+  maxPoolSize : 30
+  idleTimeout : 30
+  queryTimeout : 20
+  insertUpdateTimeout : 10
+
+- connectionURL : jdbc:mysql://domain.db:3306/db_cdp_service?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false
+  driversClass : com.mysql.jdbc.Driver
+  username : root
+  password : 123456
+  minPoolSize : 1
+  maxPoolSize : 30
+  idleTimeout : 30
+  queryTimeout : 20
+  insertUpdateTimeout : 10
+  readonly : true
+```
+
+其中`docker-compose.yaml`文件内容如下：
+```yaml
+
+
+version: '3.3'
+services:
+  rsync:
+    tty: true
+    image: ${RSYNC_IMAGE}
+    container_name: rsync
+    network_mode: host
+    volumes:
+      - /opt/soft/cdp_job_jar:/opt/soft/cdp_job_jar
+    extra_hosts:
+      # rsyncd集群的服务地址
+      - domain.rsyncd1:${RSYNC_DOMAIN_1}
+#      - domain.rsyncd2:${RSYNC_DOMAIN_2}
+ #     - domain.rsyncd3:${RSYNC_DOMAIN_3}
+  es:
+    image: ${ES_IMAGE}
+    container_name: es
+    restart: always
+    environment:
+      TZ: Asia/Shanghai
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${ES_VOLUME}:/usr/share/elasticsearch/data
+    ports:
+      - "${ES_REST_PORT}:9200"
+      - "${ES_INTERNAL_PORT}:9300"
+  svn:
+    image: ${SVN_IMAGE}
+    container_name: svn
+    restart: always
+    environment:
+      TZ: Asia/Shanghai
+    volumes:
+      - ${SVN_VOLUME}:/svn
+    ports:
+      - ${SVN_PORT}:80
+  cdp-es:
+    container_name: cdp-es
+    image: ${CDP_ES_IMAGE}
+    restart: always
+    network_mode: "host"
+    environment:
+      - TZ=Asia/Shanghai
+  cdp-web:
+    container_name: cdp-web
+    image: ${CDP_WEB_IMAGE}
+    restart: always
+    network_mode: "host"
+    env_file:
+      - common.env
+      - cdp-web.env
+  cdp-service:
+    container_name: cdp-service
+    image: ${CDP_SERVICE_IMAGE}
+    restart: always
+    network_mode: "host"
+    volumes:
+      - ${CDP_SERVICE_VOLUME}:/opt/config/swap.config
+    environment:
+      - TZ=Asia/Shanghai
+
+```
+
 ## 参考链接
 
 - [Ways to set environment variables in Compose](https://docs.docker.com/compose/environment-variables/set-environment-variables/)

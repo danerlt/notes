@@ -1,5 +1,8 @@
 # Bash 变量
 
+> 本文转载自 [Bash 变量](https://wangdoc.com/bash/variable) by [网道](https://WangDoc.com)
+
+
 ## 简介
 
 Bash 变量分成环境变量和自定义变量两类。
