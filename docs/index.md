@@ -26,8 +26,24 @@ mkdocs是一个用于编写文档的工具，它的优点有：
 
 
 
+## 搭建步骤
 
+### 安装依赖
 
+```shell
+pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+```
+
+### 本地启动服务
+```shell
+python main.py
+```
+
+### 添加内容
+
+在`docs`目录下添加目录和文件
+
+如果需要自定义排序，文件夹和 `markdown` 文件名称必须是数字开头，例如`01_操作手册`，`02_安装指南.md`。
 
 
 
