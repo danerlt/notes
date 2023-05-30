@@ -1,0 +1,95 @@
+<header class="navbar">
+    <nav class="navbar-items can-hide">
+        <!-- logo设置-->
+        <span>
+            <a
+                    href="{{ config.extra.homepage | d(nav.homepage.url, true) | url }}"
+                    title="{{ config.site_name | e }}"
+                    class="md-header__button md-logo"
+                    aria-label="{{ config.site_name }}"
+                    data-md-component="logo"
+            >
+      {% include "partials/logo.html" %}
+    </a>
+
+    </span>
+        <!-- Button to open drawer -->
+        <label class="md-header__button md-icon" for="__drawer">
+            {% include ".icons/material/menu" ~ ".svg" %}
+        </label>
+
+
+        <!-- 标题设置 -->
+        <span>
+        <a aria-current="page" href="/" class="router-link-active router-link-exact-active">
+            <span class="site-name can-hide">
+                 {{ config.site_name }}
+            </span>
+        </a>
+    </span>
+
+        <div class="navbar-items-wrapper" style="max-width: 1301px;"><!--[--><!--]-->
+            <!-- 导航栏设置 -->
+            <!-- Navigation tabs (sticky) -->
+            {% include "partials/tabs.html" %}
+
+            <!-- 切换颜色模式 -->
+            <button class="toggle-color-mode-button" title="切换颜色模式">
+                <!-- Color palette -->
+                {% if not config.theme.palette is mapping %}
+                    <form class="md-header__option" data-md-component="palette">
+                        {% for option in config.theme.palette %}
+                            {% set scheme = option.scheme | d("default", true) %}
+                            <input
+                                    class="md-option"
+                                    data-md-color-media="{{ option.media }}"
+                                    data-md-color-scheme="{{ scheme | replace(' ', '-') }}"
+                                    data-md-color-primary="{{ option.primary | replace(' ', '-') }}"
+                                    data-md-color-accent="{{ option.accent | replace(' ', '-') }}"
+                                    {% if option.toggle %}
+                                    aria-label="{{ option.toggle.name }}"
+                                    {% else %}
+                                    aria-hidden="true"
+                                    {% endif %}
+                                    type="radio"
+                                    name="__palette"
+                                    id="__palette_{{ loop.index }}"
+                            />
+                            {% if option.toggle %}
+                                <label
+                                        class="md-header__button md-icon"
+                                        title="{{ option.toggle.name }}"
+                                        for="__palette_{{ loop.index0 or loop.length }}"
+                                        hidden
+                                >
+                                    {% include ".icons/" ~ option.toggle.icon ~ ".svg" %}
+                                </label>
+                            {% endif %}
+                        {% endfor %}
+                    </form>
+                {% endif %}
+            </button>
+
+            <!-- 搜索框设置 -->
+            <div id="docsearch-container">
+                {% if "material/search" in config.plugins %}
+                    <label class="md-header__button md-icon" for="__search">
+                        {% include ".icons/material/magnify.svg" %}
+                    </label>
+                    <!-- Search interface -->
+                    {% include "partials/search.html" %}
+                {% endif %}
+            </div>
+
+            <!-- Git仓库地址设置 -->
+            <div id="source-container">
+                <!-- Repository information -->
+                {% if config.repo_url %}
+                    <div class="md-header__source">
+                        {% include "partials/source.html" %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+</header>

@@ -1,68 +1,17 @@
-<!-- Determine class according to state -->
-{% if not class %}
-    {% set class = "md-tabs__link" %}
-    {% if nav_item.active %}
-        {% set class = class ~ " md-tabs__link--active" %}
-    {% endif %}
-{% endif %}
+{%- if not nav_item.children %}
+    <li class="navbar-dropdown-item">
+        <a href="{{ nav_item.url  | url }}" aria-label="{{ nav_item.title }}"> {{ nav_item.title }}</a>
+    </li>
+{%- else %}
+    <li class="navbar-dropdown-item">
+        <h4 class="navbar-dropdown-subtitle">
+            <a href="#" aria-label="{{ nav_item.title }}"> {{ nav_item.title }}</a>
+        </h4>
+        <ul class="navbar-dropdown-subitem-wrapper">
+            {%- for nav_item in nav_item.children %}
+                {% include "partials/tabs-item-sub.html" %}
+            {%- endfor %}
+        </ul>
+    </li>
+{%- endif %}
 
-<!-- 一级导航栏 -->
-{% set title = nav_item.title %}
-
-{% if nav_item.children is not none and nav_item.children | length > 1 %}
-    <!-- 有子目录的话就有下拉菜单 -->
-
-    <div class="navbar-item">
-        <div class="navbar-dropdown-wrapper">
-            <button class="navbar-dropdown-title" type="button" aria-label="Java">
-                <a href="{{ nav_item.url  | url }}" class=""
-                   aria-label="{{ title }}"> {{ title }}</a>
-                <span class="arrow down"></span>
-            </button>
-            <button class="navbar-dropdown-title-mobile" type="button" aria-label="Java">
-                <a href="{{ nav_item.url  | url }}" class=""
-                   aria-label="{{ title }}"> {{ title }}</a>
-                <span class="right arrow"></span>
-            </button>
-            <ul class="navbar-dropdown">
-                {% for sub_item in nav_item.children %}
-                    <!-- 二级导航栏 -->
-                    {% set sub_title = sub_item.title %}
-
-
-                    {% if sub_item.children is not none and sub_item.children | length > 1 %}
-                        <li class="navbar-dropdown-item">
-                            <h4 class="navbar-dropdown-subtitle">
-                                <a href="{{ sub_item.url  | url }}" class=""
-                                   aria-label="{{ sub_title }}"> {{ sub_title }}</a>
-                            </h4>
-                            <ul class="navbar-dropdown-subitem-wrapper">
-                                {% for sub_sub_item in sub_item.children %}
-                                    <!-- 三级导航栏 -->
-                                    {% set sub_sub_title = sub_sub_item.title %}
-                                    <li class="navbar-dropdown-subitem">
-                                        <a href="{{ sub_sub_item.url  | url }}" class=""
-                                           aria-label="{{ sub_sub_title }}"> {{ sub_sub_title }}</a>
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        </li>
-                    {% else %}
-                        <li class="navbar-dropdown-item">
-                            <a href="{{ sub_item.url  | url }}" class=""
-                               aria-label="{{ sub_title }}"> {{ sub_title }}</a>
-                        </li>
-                    {% endif %}
-
-                {% endfor %}
-            </ul>
-
-        </div>
-    </div>
-{% else %}
-    <!-- 没有子目录的话就只有一个标题 -->
-    <div class="navbar-item">
-        <a href="{{ nav_item.url  | url }}" class="" aria-label="{{ title }}">{{ title }} </a>
-    </div>
-
-{% endif %}
