@@ -1,31 +1,111 @@
-{%- if nav|length>1 %}
-    <!-- Main navigation -->
-    {%- for nav_item in nav %}
-        {%- if nav_item.children %}
-            <!-- 有子目录的话就有下拉菜单 -->
-            <div class="navbar-item">
-                <div class="navbar-dropdown-wrapper">
-                    <button class="navbar-dropdown-title" type="button" aria-label="{{ nav_item.title }}">
-                        <span class="title"> {{ nav_item.title }} </span>
-                        <span class="arrow down"></span>
-                    </button>
-                    <button class="navbar-dropdown-title-mobile" type="button" aria-label="{{ nav_item.title }}">
-                        <span class="title"> {{ nav_item.title }} </span>
-                        <span class="right arrow"></span>
-                    </button>
-                    <ul class="navbar-dropdown">
-                        {%- for nav_item in nav_item.children %}
-                            {% include "partials/tabs-item.html" %}
+<div class="navbar fixed-top navbar-expand-lg navbar-{% if config.theme.nav_style == "light" %}light{% else %}dark{% endif %} bg-{{ config.theme.nav_style }}">
+    <div class="container">
+
+        {%- block site_name %}
+            <a class="navbar-brand" href="{{ nav.homepage.url|url }}">{{ config.site_name }}</a>
+        {%- endblock %}
+
+        {%- if nav|length>1 or (page and (page.next_page or page.previous_page)) or config.repo_url %}
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        {%- endif %}
+
+        <!-- Expanded navigation -->
+        <div id="navbar-collapse" class="navbar-collapse collapse">
+            {%- block site_nav %}
+                {%- if nav|length>1 %}
+                    <!-- Main navigation -->
+                    <ul class="nav navbar-nav">
+                        {%- for nav_item in nav %}
+                            {%- if nav_item.children %}
+                                <li class="dropdown{% if nav_item.active %} active{% endif %}">
+                                    <a href="#" class="nav-link dropdown-toggle"
+                                       data-toggle="dropdown">{{ nav_item.title }} <b class="caret"></b></a>
+                                    <ul class="dropdown-menu">
+                                        {%- for nav_item in nav_item.children %}
+                                            {% include "partials/nav-sub.html" %}
+                                        {%- endfor %}
+                                    </ul>
+                                </li>
+                            {%- else %}
+                                <li class="navitem{% if nav_item.active %} active{% endif %}">
+                                    <a href="{{ nav_item.url|url }}" class="nav-link">{{ nav_item.title }}</a>
+                                </li>
+                            {%- endif %}
                         {%- endfor %}
                     </ul>
-                </div>
-            </div>
-        {% else %}
-            <!-- 没有子目录的话就只有一个标题 -->
-            <div class="navbar-item">
-                <a href="{{ nav_item.url  | url }}" aria-label="{{ nav_item.title }}">{{ nav_item.title }} </a>
-            </div>
+                {%- endif %}
+            {%- endblock %}
 
-        {% endif %}
-    {%- endfor %}
-{%- endif %}
+            <ul class="nav navbar-nav ml-auto">
+                {%- block search_button %}
+                    {%- if 'search' in config['plugins'] %}
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-toggle="modal" data-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> {% trans %}Search{% endtrans %}
+                            </a>
+                        </li>
+                    {%- endif %}
+                {%- endblock %}
+
+                {%- block next_prev %}
+                    {%- if page and (page.next_page or page.previous_page) %}
+                        <li class="nav-item">
+                            <a rel="prev" {% if page.previous_page %}href="{{ page.previous_page.url|url }}"
+                               class="nav-link"{% else %}class="nav-link disabled"{% endif %}>
+                                <i class="fa fa-arrow-left"></i> {% trans %}Previous{% endtrans %}
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a rel="next" {% if page.next_page %}href="{{ page.next_page.url|url }}" class="nav-link"
+                               {% else %}class="nav-link disabled"{% endif %}>
+                                {% trans %}Next{% endtrans %} <i class="fa fa-arrow-right"></i>
+                            </a>
+                        </li>
+                    {%- endif %}
+                {%- endblock %}
+
+                {%- block repo %}
+                    {%- if page and page.edit_url %}
+                        <li class="nav-item">
+                            <a href="{{ page.edit_url }}" class="nav-link">
+                                {%- if config.repo_name == 'GitHub' -%}
+                                    <i class="fa fa-github"></i> {% trans repo_name=config.repo_name %}Edit on
+                                    {{ repo_name }}{% endtrans %}
+                                {%- elif config.repo_name == 'Bitbucket' -%}
+                                    <i class="fa fa-bitbucket"></i> {% trans repo_name=config.repo_name %}Edit on
+                                    {{ repo_name }}{% endtrans %}
+                                {%- elif config.repo_name == 'GitLab' -%}
+                                    <i class="fa fa-gitlab"></i> {% trans repo_name=config.repo_name %}Edit on
+                                    {{ repo_name }}{% endtrans %}
+                                {%- elif config.repo_name -%}
+                                    {% trans repo_name=config.repo_name %}Edit on {{ repo_name }}{% endtrans %}
+                                {% else %}
+                                    {% trans repo_name=config.repo_name %}Edit{% endtrans %}
+                                {%- endif -%}
+                            </a>
+                        </li>
+                    {%- elif config.repo_url %}
+                        <li class="nav-item">
+                            <a href="{{ config.repo_url }}" class="nav-link">
+                                {%- if config.repo_name == 'GitHub' -%}
+                                    <i class="fa fa-github"></i> {{ config.repo_name }}
+                                {%- elif config.repo_name == 'Bitbucket' -%}
+                                    <i class="fa fa-bitbucket"></i> {{ config.repo_name }}
+                                {%- elif config.repo_name == 'GitLab' -%}
+                                    <i class="fa fa-gitlab"></i> {{ config.repo_name }}
+                                {%- else -%}
+                                    {{ config.repo_name }}
+                                {%- endif -%}
+                            </a>
+                        </li>
+                    {%- endif %}
+                {%- endblock %}
+            </ul>
+        </div>
+
+
+    </div>
+</div>

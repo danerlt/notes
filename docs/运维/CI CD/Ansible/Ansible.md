@@ -103,3 +103,8 @@ ansible all -m ping
    
 
 ## 构建清单(Building an inventory)
+
+
+## 参考链接
+
+- [Ansibl中文官方文档](https://cn-ansibledoc.readthedocs.io/zh_CN/latest/)

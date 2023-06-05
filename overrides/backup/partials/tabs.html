@@ -1,0 +1,31 @@
+{%- if nav|length>1 %}
+    <!-- Main navigation -->
+    {%- for nav_item in nav %}
+        {%- if nav_item.children %}
+            <!-- 有子目录的话就有下拉菜单 -->
+            <div class="navbar-item">
+                <div class="navbar-dropdown-wrapper">
+                    <button class="navbar-dropdown-title" type="button" aria-label="{{ nav_item.title }}">
+                        <span class="title"> {{ nav_item.title }} </span>
+                        <span class="arrow down"></span>
+                    </button>
+                    <button class="navbar-dropdown-title-mobile" type="button" aria-label="{{ nav_item.title }}">
+                        <span class="title"> {{ nav_item.title }} </span>
+                        <span class="right arrow"></span>
+                    </button>
+                    <ul class="navbar-dropdown">
+                        {%- for nav_item in nav_item.children %}
+                            {% include "partials/tabs-item.html" %}
+                        {%- endfor %}
+                    </ul>
+                </div>
+            </div>
+        {% else %}
+            <!-- 没有子目录的话就只有一个标题 -->
+            <div class="navbar-item">
+                <a href="{{ nav_item.url  | url }}" aria-label="{{ nav_item.title }}">{{ nav_item.title }} </a>
+            </div>
+
+        {% endif %}
+    {%- endfor %}
+{%- endif %}
