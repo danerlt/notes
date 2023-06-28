@@ -8,12 +8,21 @@ git config --global  --unset https.https://github.com.proxy
 git config --global  --unset http.https://github.com.proxy 
 
 # 设置代理 代理软件是V2ray
-# http
+# http 
 git config --global http.https://github.com.proxy http://127.0.0.1:10809
 git config --global https.https://github.com.proxy https://127.0.0.1:10809
 # socket
 git config --global http.proxy 'socks5://127.0.0.1:10808'
 git config --global https.proxy 'socks5://127.0.0.1:10808'
+
+# 设置代理 代理软件是clash
+# http
+git config --global http.https://github.com.proxy http://127.0.0.1:7890
+git config --global https.https://github.com.proxy https://127.0.0.1:7890
+# socket
+git config --global http.proxy 'socks5://127.0.0.1:7890'
+git config --global https.proxy 'socks5://127.0.0.1:7890'
+
 
 # 选择一个或多个commit合并到当前分支 
 # 如果冲突了需要手动解决冲突然后执行 git add 提交到缓存区再使用git cherry-pick --continue 继续提交
