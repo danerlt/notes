@@ -234,6 +234,45 @@ nvidia-smi
 
 
 
+## 安装CUDA ToolKit
+
+通过 [https://developer.nvidia.com/cuda-11-4-0-download-archive](https://developer.nvidia.com/cuda-11-4-0-download-archive) 下载对应的安装包，注意要和Nvidia Driver的版本一致。
+
+![image-20231206162705781](https://danerlt-1258802437.cos.ap-chongqing.myqcloud.com/images/image-20231206162705781.png)
+
+下载命令：
+
+```bash
+wget https://developer.download.nvidia.com/compute/cuda/11.4.0/local_installers/cuda_11.4.0_470.42.01_linux.run
+```
+
+安装命令：
+
+```bash
+sudo sh cuda_11.4.0_470.42.01_linux.run
+```
+
+接受协议输入`accept`
+
+![image-20231206172606863](https://danerlt-1258802437.cos.ap-chongqing.myqcloud.com/images/image-20231206172606863.png)
+
+在 Driver 选项按空格取消选择，然后使用方向键移动到 `Install`选项回车。
+
+![image-20231206172851336](https://danerlt-1258802437.cos.ap-chongqing.myqcloud.com/images/image-20231206172851336.png)
+
+安装完成输出：
+
+![image-20231206173155341](https://danerlt-1258802437.cos.ap-chongqing.myqcloud.com/images/image-20231206173155341.png)
+
+设置环境变量，编辑 `/etc/profile`文件，追加下面的内容：
+
+```bash
+export PATH=/usr/local/cuda-11.4/bin${PATH:+:${PATH}}
+export LD_LIBRARY_PATH=/usr/local/cuda-11.4/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
+```
+
+
+
 
 
 ## 安装conda
