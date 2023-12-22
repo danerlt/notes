@@ -134,3 +134,17 @@ Aug 17 18:03:15 host jupyterhub[158352]: [I 2023-08-17 18:03:15.458 JupyterHub a
 Aug 17 18:03:15 host jupyterhub[158352]: [D 2023-08-17 18:03:15.459 JupyterHub app:2803] It took 0.626 seconds for the Hub to start
 
 ```
+
+
+## 安装jupyterlab插件
+
+### debugger
+
+```shell
+conda install xeus-python=0.8.0 -c conda-forge
+jupyter labextension install @jupyterlab/debugger
+```
+
+## 参考链接
+
+- [好用到飞起的12个jupyter lab插件](https://cloud.tencent.com/developer/article/1971947)
