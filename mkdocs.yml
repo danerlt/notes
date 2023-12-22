@@ -19,7 +19,7 @@ theme:
 #  name: mkdocs
 #  name: mkdocs
   # 覆盖mkdocs默认HTML模板的目录
-  custom_dir: overrides
+  # custom_dir: overrides
   language: zh
   features:
     - announce.dismiss # 提供已读功能
