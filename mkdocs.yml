@@ -16,10 +16,10 @@ use_directory_urls: false
 # 主题
 theme:
   name: material
-#  name: mkdocs
-#  name: mkdocs
+  #  name: mkdocs
+  #  name: mkdocs
   # 覆盖mkdocs默认HTML模板的目录
-  # custom_dir: overrides
+  custom_dir: overrides
   language: zh
   features:
     - announce.dismiss # 提供已读功能
@@ -48,16 +48,18 @@ theme:
     - scheme: default
       # 主色调 用于标题、侧边栏、文本链接和其他几个组件
       primary: purple  # 紫色
+      # 强调颜色用于表示可以进行交互的元素，例如悬停链接、按钮和滚动条。
       accent: blue # 蓝色
       toggle:
         icon: material/brightness-7
-        name: Switch to dark mode
+        name: 切换到深色模式
+    # 深色模式
     - scheme: slate
       primary: indigo
       accent: indigo
       toggle:
         icon: material/brightness-4
-        name: Switch to light mode
+        name: 切换到浅色模式
   # 字体
   font:
     text: Roboto
@@ -89,8 +91,8 @@ plugins:
   # 压缩html
   - minify:
       minify_html: true
-#  - markdownextradata:
-#      data: data
+  #  - markdownextradata:
+  #      data: data
   # 自动生成导航栏
   - awesome-pages
   - literate-nav:
@@ -151,6 +153,7 @@ extra_css:
 extra_javascript:
   - https://cdnjs.loli.net/ajax/libs/pangu/3.3.0/pangu.min.js
   - https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.0/es5/tex-chtml.min.js
+  - https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js
   - assets/javascripts/mathjax.js
 #  - https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/7.12.1/polyfill.min.js
 #  - https://fastapi.tiangolo.com/js/termynal.js
