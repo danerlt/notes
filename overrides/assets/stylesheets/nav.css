@@ -1,15 +1,15 @@
 :root {
-    --c-brand: #3eaf7c;
-    --c-brand-light: #4abf8a;
-    --c-bg: #ffffff;
-    --c-bg-light: #f3f4f5;
-    --c-bg-lighter: #eeeeee;
-    --c-bg-navbar: #ffffff;
+    --c-brand: #3eaf7c; /*强调色 绿色*/
+    --c-brand-light: #4abf8a; /*浅色模式强调色 绿色*/
+    --c-bg: #ffffff; /*背景色 白色*/
+    --c-bg-light: #f3f4f5;  /*浅色模式背景色  灰白色*/
+    --c-bg-lighter: #eeeeee;  /*浅色模式背景色  灰色*/
+    --c-bg-navbar: #AB47BD;  /*导航栏背景色  紫色*/
     /*--c-bg-navbar: #ab47bd;*/
-    --c-bg-sidebar: var(--c-bg);
+    --c-bg-sidebar: var(--c-bg); /*侧边栏颜色*/
     --c-bg-arrow: #cccccc;
-    --c-text: #2c3e50;
-    --c-text-accent: var(--c-brand);
+    --c-text: #2c3e50;  /*文本色  深蓝色*/
+    --c-text-accent: var(--c-brand); /*文本强调色  蓝色*/
     --c-text-light: #3a5169;
     --c-text-lighter: #4e6e8e;
     --c-text-lightest: #6a8bad;
@@ -52,6 +52,10 @@
     --homepage-width: 1200px
 }
 
+a {
+  color: #000000,
+}
+
 .navbar {
     --navbar-line-height: calc(var(--navbar-height) - 2 * var(--navbar-padding-v));
     padding: var(--navbar-padding-v) var(--navbar-padding-h);
@@ -70,8 +74,8 @@
     /*font-size: 1.3rem;*/
     font-size: 1rem;
     font-weight: 600;
-    color: var(--c-text);
-    /*color: #eaecef;*/
+    /*color: var(--c-text);*/
+    color: #000000;
     position: relative
 }
 
@@ -121,7 +125,7 @@
 }
 
 .navbar-items a:hover, .navbar-items a.router-link-active {
-    color: var(--c-text)
+    color: #ffffff;
 }
 
 .navbar-items .navbar-item {
