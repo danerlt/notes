@@ -146,8 +146,8 @@ markdown_extensions:
 
 
 extra_css:
-  - assets/stylesheets/bootstrap.min.css
-  - assets/stylesheets/my.css
+#  - assets/stylesheets/bootstrap.min.css
+#  - assets/stylesheets/my.css
 #  - https://fastapi.tiangolo.com/css/termynal.css
 #  - https://fastapi.tiangolo.com/css/custom.css
 extra_javascript:
