@@ -1,15 +1,21 @@
 # 项目文档的主标题
-site_name: 个人笔记
-# 作者
-site_author: 'danerlt'
-# 版权
-copyright: 'Copyright © danerlt. All rights reserved.'
+site_name: danerlt的个人笔记
 # 项目文档的描述
 site_description: danerlt的个人笔记
-# github 仓库名
+# 作者
+site_author: 'danerlt'
+# 网站地址
+site_url: 'https://danerlt.github.io/notes/'
+# 版权
+copyright: 'Copyright © danerlt. All rights reserved.'
+
+strict: false
+# Github仓库相关
+# 仓库名
 repo_name: danerlt/notes
-# github 仓库地址
+# 仓库地址
 repo_url: 'https://github.com/danerlt/notes'
+
 # 是否每个目录都创建目录 这个设置false,渲染出来的图片路径就不会有多余的目录
 use_directory_urls: false
 
@@ -67,19 +73,6 @@ theme:
   icon:
     logo: logo
 
-# 顶部导航栏
-nav:
-  - Python: python/
-  - 后端: 后端/
-  - 算法: 算法/
-  - 人工智能: 人工智能/
-  - 数据库: 数据库/
-  - 运维: 运维/
-  - 前端: 前端/
-  - 常用工具: 常用工具/
-  - 常用命令: 常用命令/
-  - 其他: 其他/
-  - 关于: 关于/
 
 
 # 插件
@@ -118,7 +111,9 @@ markdown_extensions:
       toc_depth: 3
       # 替换生成的ID中的空格的字符
       separator: "_"
-  - pymdownx.arithmatex
+  # 数学公式
+  - pymdownx.arithmatex:
+      generic: true
   - pymdownx.betterem:
       smart_enable: all
   - pymdownx.caret
@@ -146,15 +141,42 @@ markdown_extensions:
 
 
 extra_css:
+  - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.css
 #  - assets/stylesheets/bootstrap.min.css
 #  - assets/stylesheets/my.css
 #  - https://fastapi.tiangolo.com/css/termynal.css
 #  - https://fastapi.tiangolo.com/css/custom.css
 extra_javascript:
-  - https://cdnjs.loli.net/ajax/libs/pangu/3.3.0/pangu.min.js
-  - https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.0/es5/tex-chtml.min.js
-  - https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js
+  - javascripts/katex.js
+  - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.js
+  - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/contrib/auto-render.min.js
   - assets/javascripts/mathjax.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+  - https://cdnjs.loli.net/ajax/libs/pangu/3.3.0/pangu.min.js
+  - https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js
 #  - https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/7.12.1/polyfill.min.js
 #  - https://fastapi.tiangolo.com/js/termynal.js
 #  - https://fastapi.tiangolo.com/js/custom.js
+
+
+extra:
+  copyright: '<a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh">CC BY-SA 4.0</a> 和 <a href="https://github.com/zTrix/sata-license">SATA</a>'
+  pagetime: 'on'
+  manifest: 'manifest.webmanifest'
+  githast: ''
+
+
+# 顶部导航栏
+nav:
+  - Python基础: 01_Python基础/
+  - PythonWeb: 02_PythonWeb/
+  - AI: 03_AI/
+  - 后端: 04_后端/
+  - 前端: 05_前端/
+  - 算法和数据结构: 06_算法和数据结构/
+  - 运维: 07_运维/
+  - 常用工具: 08_常用工具/
+  - 常用命令: 09_常用命令/
+  - 其他: 10_其他/
+  - 关于: 11_关于/
