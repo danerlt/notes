@@ -109,6 +109,9 @@ cmd="env OPENBLAS_NUM_THREADS=1 TRUST_REMOTE_CODE=True openllm start /yourdir/mo
 nohup $cmd > baichuan.log 2>&1;
 ```
 
+运行报错 `torch.cuda.OutOfMemoryError: CUDA out of memory. Tried to allocate 1.20 GiB (GPU 0; 39.59 GiB total capacity; 20.60 GiB already allocated; 26.19 MiB free; 20.60 GiB reserved in total by PyTorch) If reserved memory is >> allocated memory try setting max_split_size_mb to avoid fragmentation.  See documentation for Memory Management and PYTORCH_CUDA_ALLOC_CONF
+`
+
 
 ## 参考链接
 
