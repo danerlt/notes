@@ -21,7 +21,6 @@ git checkout -b v0.4.7 0.4.7
 docker-compose.middleware.yaml  # 服务默认的中间件配置文件
 docker-compose.yaml # dify项目的docker-compose配置文件，包括中间件和前端服务和后端服务
 milvus-standalone-docker-compose.yml # milvus向量库单机版的配置文件
-
 ```
 
 默认情况使用的向量数据库为 `weaviate`，如果要使用 `milvus` 向量库的话需要修改 `milvus-standalone-docker-compose.yml` 文件。
@@ -124,13 +123,11 @@ yarn install --frozen-lockfile
 npm run dev 
 ```
 
-启动服务后默认地址为 [http://localhost:3000](http://localhost:3000)，
+启动前端服务后默认地址为 [http://localhost:3000](http://localhost:3000)，
 
 ## app.py 分析
 
-### 初始化App
-
-#### create_app
+### create_app
 
 ```python
 class DifyApp(Flask):
@@ -176,7 +173,7 @@ def create_app(test_config=None) -> Flask:
 这段代码定义了一个名为 `DifyApp` 的 `Flask` 子类，用于创建一个 `DifyApp` 应用。`create_app` 函数是一个应用工厂函数，用于创建
 Flask 应用实例。该函数根据不同的配置类型设置应用配置，并初始化应用密钥、日志和扩展。最后，该函数返回创建的 Flask 应用实例。
 
-#### initialize_extensions
+### initialize_extensions
 
 其中 `initialize_extensions`函数如下，这个函数用于初始化 `app` 的各种扩展，将 `app` 传递给每个扩展，以便将扩展绑定到 `app`。
 
@@ -196,7 +193,7 @@ def initialize_extensions(app):
     ext_sentry.init_app(app)
 ```
 
-#### `register_blueprints`
+### register_blueprints
 
 其中 `register_blueprints`定义如下：
 
@@ -246,12 +243,12 @@ def register_blueprints(app):
 
 首先，它从四个不同的模块导入了四个Blueprint对象：
 
-1. console_app_bp：来自controllers.console模块
-1. files_bp：来自controllers.files模块
-1. service_api_bp：来自controllers.service_api模块
-1. web_bp：来自controllers.web模块
+1. `console_app_bp`：来自`controllers.console`模块
+1. `files_bp`：来自`controllers.files`模块
+1. `service_api_bp`：来自`controllers.service_api`模块
+1. `web_bp`：来自`controllers.web`模块
 
-针对每个导入的蓝图，函数对其进行CORS配置，然后在使用`app.register_blueprint()`方法将蓝图注册到 Flask
+针对每个导入的蓝图，函数对其进行 CORS 配置，然后在使用`app.register_blueprint()`方法将蓝图注册到 Flask
 应用中，这样对应的URL路由就能通过Web服务访问到相应蓝图所处理的视图函数及资源。
 
 ## 初始化
