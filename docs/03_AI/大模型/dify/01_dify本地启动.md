@@ -37,7 +37,7 @@ vim docker/docker-compose.middleware.yaml
 
 然后执行命令启动服务:
 
-```bash、
+```bash
 # 启动服务
 docker-compose -f docker-compose.middleware.yaml up -d
 # 查看服务
