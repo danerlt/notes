@@ -25,4 +25,7 @@ ALTER TABLE nf_label ADD UNIQUE INDEX `unique_idx` ( `task_id` ASC, `name` ASC )
 ALTER TABLE table_name DROP COLUMN column_name;
 # 示例
 ALTER TABLE nf_label DROP COLUMN deleted;
+
+# 查看数据库中有多少张表
+SELECT COUNT(*) AS count FROM information_schema.tables WHERE table_schema = 'yourdatabasename';
 ```
