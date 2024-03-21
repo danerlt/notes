@@ -79,18 +79,52 @@ yum install -y gcc gcc-c++ kernel-devel-$(uname -r) kernel-headers-$(uname -r)
 
 ### 停止GPU上的任务和卸载旧的驱动
 
+准备工作 
+
 ```bash
-#准备工作 kill 所有与nvidia 有关的服务
-$: su root # 切换到管理员杼下
+# 切换到管理员杼下
+su root 
 
-$: sudo service ligthdm stop
+# 这个服务如果没有可以不用执行
+sudo service ligthdm stop
+```
 
-#在安装驱动前，应保证没有相应的CUDA的程序在运行
-$: fuser -v /dev/nvidia*
-$: kill -9 [PID]
+`kill` 所有与 `nvidia` 有关的进程，将下面的内容写到脚本`kill-nvidia-process.sh`中：
 
+```bash
+echo "start"
+
+fuser -v /dev/nvidia* > a.txt
+
+echo "start kill"
+
+for i in `cat a.txt`
+do
+    echo "start execute kill -9 "$i
+    kill -9 $i
+    echo "end ececute kill -9 "$i
+done
+
+echo "end"
+```
+
+执行脚本：
+
+```bash
+bash kill-nvidia-process.sh
+```
+
+执行完上面的脚本使用下面的命令查看是否还有进程，输出为空说明进程已经全部 kill 了：
+
+```bash
+fuser -v /dev/nvidia*
+```
+
+卸载旧的驱动
+
+```bash
 # 卸载旧的驱动
-$: /usr/bin/nvidia-uninstall
+/usr/bin/nvidia-uninstall
 ```
 
 卸载旧的驱动，弹出的提示框默认为`No`，这里不需要修改，直接按Enter即可。
@@ -154,7 +188,7 @@ sh NVIDIA-Linux-x86_64-535.154.05.run -no-x-check
 
 ![image-20240126110346799](https://danerlt-1258802437.cos.ap-chongqing.myqcloud.com/images/image-20240126110346799.png)
 
-提示没有`cc`命令，需要安装`devtoolset-8-toolchain`，首先在`/etc/yum.repos.d/CentOS-SCLo-rh.repo`中添加内容：
+提示没有`cc`命令，需要安装`devtoolset-11-toolchain`，首先在`/etc/yum.repos.d/CentOS-SCLo-rh.repo`中添加内容：
 
 ```tex
 # CentOS-SCLo-rh.repo
