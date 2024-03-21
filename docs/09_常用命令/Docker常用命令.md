@@ -47,6 +47,35 @@ docker run -p 33306:3306 --name mysql \
 # k8s进入 MySQL 容器中文乱码问题
 docker run --rm -it mysql:8.0 env LANG=C.UTF-8 /bin/bash
 
+# 清理Docker
+docker system purne
+
+# 查看网络
+docker network ls
+
+# 查看docker 网络详情
+docker network inspect 
+
+# 创建网络 使用bridge模式 网络名称为 localnet
+docker create network create -d bridge localnet
+
+# 查看容器端口映射
+docker port 容器名
+
+# 服务管理
+docker service 
+
+# 卷管理
+docker volume
+# 查看卷
+docker volume ls
+# 查看卷详细信息
+docker volume inspect 卷名称
+# 删除卷
+docker volume prune # 这个会删除未被使用的卷，慎用
+docker volume rm 卷名称 # 删除指定的卷，如果卷在使用中会提示卷在使用中，无法删除
+
+
 ```
 
 
@@ -82,6 +111,7 @@ docker run --rm -it mysql:8.0 env LANG=C.UTF-8 /bin/bash
 
 ### docker images 详细参数
 
+等价于 `docker image ls` 和 `docker image list`
 ```
 -a :列出本地所有的镜像（含中间映像层，默认情况下，过滤掉中间映像层）；
 
@@ -169,7 +199,7 @@ docker exec -it nginx /bin/bash
 -e, --env=[]               指定环境变量，容器中可以使用该环境变量
 -m, --memory=""            指定容器的内存上限
 -P, --publish-all=false    指定容器暴露的端口
--p, --publish=[]           指定容器暴露的端口
+-p, --publish=[]           指定容器暴露的端口 格式为： 主机端口:容器端口
 -h, --hostname=""          指定容器的主机名
 -v, --volume=[]            给容器挂载存储卷，挂载到容器的某个目录    顺序：主机：容器
 --volumes-from=[]          给容器挂载其他容器上的卷，挂载到容器的某个目录
