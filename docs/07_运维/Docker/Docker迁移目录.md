@@ -40,3 +40,45 @@ rsync -avzP /var/lib/docker /data/docker/lib/
 ```
 
 ![](https://danerlt-1258802437.cos.ap-chongqing.myqcloud.com/2024-03-21-HIPoiT.png)
+
+5. 修改配置文件 
+
+```bash
+# 首先备份一下原来的配置文件
+cp /lib/systemd/system/docker.service /lib/systemd/system/docker.service.bak
+# 编辑配置文件
+vim /lib/systemd/system/docker.service
+```
+
+在 `ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock` 后添加 `--graph=/data/docker/lib/docker`
+
+![](https://danerlt-1258802437.cos.ap-chongqing.myqcloud.com/2024-03-22-PHOmQX.png)
+
+6. 重启Docker
+
+```bash
+systemctl daemon-reload
+systemctl restart docker
+```
+
+7. 确认docker没有问题，删除原目录
+
+```bash
+rm -rf /var/lib/docker
+```
+
+在删除的时候如果提示`cannot remove '/var/lib/docker/overlay2/xxxxxxx/merged': Device or resource busy`。需要先取消挂载再删除。
+
+使用`df -h`命令查看发现有很多挂载。
+
+![](https://danerlt-1258802437.cos.ap-chongqing.myqcloud.com/2024-03-22-0Bhzkw.png)
+
+执行下面的命令取消挂载
+```bash
+umount /var/lib/docker/overlay2/*/merged
+```
+
+再次执行删除命令，即可删除成功。
+```bash
+rm -rf /var/lib/docker
+```
