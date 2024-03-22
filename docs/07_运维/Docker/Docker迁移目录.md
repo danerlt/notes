@@ -43,22 +43,37 @@ rsync -avzP /var/lib/docker /data/docker/lib/
 
 5. 修改配置文件 
 
+首先查看一下 service 文件路径：
+
 ```bash
-# 首先备份一下原来的配置文件
-cp /lib/systemd/system/docker.service /lib/systemd/system/docker.service.bak
-# 编辑配置文件
-vim /lib/systemd/system/docker.service
+systemctl status docker
 ```
 
-在 `ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock` 后添加 `--graph=/data/docker/lib/docker`
+![](https://danerlt-1258802437.cos.ap-chongqing.myqcloud.com/2024-03-22-YfgLNg.png)
 
-![](https://danerlt-1258802437.cos.ap-chongqing.myqcloud.com/2024-03-22-PHOmQX.png)
+显示 service 文件路径为： `/etc/systemd/system/docker.service`
+
+```bash
+# 首先备份一下原来的配置文件
+cp /etc/systemd/system/docker.service /etc/systemd/system/docker.service.bak
+# 编辑配置文件
+vim /etc/systemd/system/docker.service
+```
+
+在 `ExecStart=/usr/bin/dockerd` 后添加 `--data-root=/data/docker/lib/docker`
+
+![](https://danerlt-1258802437.cos.ap-chongqing.myqcloud.com/2024-03-22-KuCV02.png)
+
 
 6. 重启Docker
 
 ```bash
+# 重新加载service
 systemctl daemon-reload
+# 重启docker
 systemctl restart docker
+# 查看docker状态
+systemctl status docker
 ```
 
 7. 确认docker没有问题，删除原目录
