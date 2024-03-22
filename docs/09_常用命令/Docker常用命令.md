@@ -3,6 +3,14 @@
 ## 常用
 
 ```bash
+# 清理Docker 没有使用的镜像、容器、卷和构建缓存
+docker system prune
+# 查看镜像层数大小 参考： https://github.com/wagoodman/dive
+dive 镜像名:tag名
+
+# 查看容器内的进程
+docker top 容器名
+
 # 修改docker域名配置
 vim /etc/systemd/system/docker.service.d/docker-options.conf
 # 添加参数 --insecure-registry参数具体设置那些根据实际情况来设置
@@ -75,7 +83,8 @@ docker volume inspect 卷名称
 docker volume prune # 这个会删除未被使用的卷，慎用
 docker volume rm 卷名称 # 删除指定的卷，如果卷在使用中会提示卷在使用中，无法删除
 
-
+# # 查看容器内的进程
+docker top 容器名
 ```
 
 
