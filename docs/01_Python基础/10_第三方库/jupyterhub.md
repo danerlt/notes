@@ -1,16 +1,16 @@
-# JupyterLab教程
+# JupyterHub教程
 
 ## 安装
 
-在Linux上安装jupyterhub,JupyterLab
+在Linux上安装`jupyterhub`
 
 首先需要使用`root`用户安装`anaconda`，然后切换到`base`环境。
 
-安装`jupyterlab`：
+安装`jupyterhub`：
 
 ```bash 
 conda activate base
-conda install jupyterhub jupyterlab notebook
+conda install jupyterhub
 ```
 
 ## 启动服务
@@ -25,10 +25,12 @@ Jupyterhub在Linux上安装好后若要修改配置并启动有两种方式：
 生成配置文件：
 
 ```bash
+mkdir -p /root/.jupyter/
+cd /root/.jupyter/
 jupyterhub --generate-config
 ```
 
-会在当前目录下生成`jupyterhub_config.py`文件。
+会在当前目录(`/root/.jupyter/`)下生成`jupyterhub_config.py`文件。
 
 修改配置文件，（重要，默认直接启动的话只有root能够登录）
 
@@ -43,8 +45,8 @@ c.JupyterHub.ip = "0.0.0.0"
 c.JupyterHub.port = 9999
 c.PAMAuthenticator.encoding = 'utf-8'
 c.LocalAuthenticator.create_system_users = True
-c.Authenticator.allowed_users = {'shuke', 'tangnn', 'litao', 'ailun', 'liyi'}
-c.Authenticator.admin_users = {'root', 'shuke', 'tangnn', 'litao', 'ailun', 'liyi'}
+c.Authenticator.allowed_users = {'your_username1','your_username2'}
+c.Authenticator.admin_users = {'root', 'your_username1','your_username2'}
 c.Application.log_level = 'DEBUG'
 c.JupyterHub.hub_bind_url = 'http://127.0.0.1:9081'
 ```
@@ -78,7 +80,7 @@ conda install ipykernel
 新建服务文件：
 
 ```bash 
-vim /usr/lib/systemd/system/jupyterhub.service 
+vim /etc/systemd/system/jupyterhub.service 
 ```
 
 将下面的内容复制进去，注意修改`ExecStart`的路径为`jupyterhub`的路径。
@@ -90,9 +92,10 @@ Requires=network-online.target
 After=network-online.target
 
 [Service]
-Restart=on-success
+WorkingDirectory=/root/.jupyter
 Environment="PATH=/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/root/miniconda3/bin"
-ExecStart=/root/miniconda3/bin/jupyterhub -f /root/jupyterhub_config.py >> /var/log/jupyterhub.log 2>&1
+Restart=on-success
+ExecStart=/root/miniconda3/bin/jupyterhub -f jupyterhub_config.py
 User=root
 
 [Install]
@@ -112,37 +115,43 @@ systemctl status jupyterhub
 服务启动成功打印如下, 可以通过`http://ip:port/`访问：
 
 ```text
-● jupyterhub.service - JupyterHub Server
+jupyterhub.service - JupyterHub Server
    Loaded: loaded (/usr/lib/systemd/system/jupyterhub.service; enabled; vendor preset: disabled)
-   Active: active (running) since Thu 2023-08-17 18:03:14 CST; 6s ago
- Main PID: 158352 (jupyterhub)
+   Active: active (running) since Tue 2024-03-26 14:27:44 CST; 3s ago
+ Main PID: 20328 (jupyterhub)
     Tasks: 8
-   Memory: 76.7M
+   Memory: 76.8M
    CGroup: /system.slice/jupyterhub.service
-           ├─158352 /root/miniconda3/bin/python /root/miniconda3/bin/jupyterhub -f /root/jupyterhub_config.py >> /var/log/jupyterhub.log 2>&1
-           └─158407 node /root/miniconda3/bin/configurable-http-proxy --ip 0.0.0.0 --port 9999 --api-ip 127.0.0.1 --api-port 8001 --error-target http://127.0.0.1:9081/hub/error --log-level info
+           ├─20328 /root/miniconda3/bin/python /root/miniconda3/bin/jupyterhub -f jupyterhub_config.py
+           └─20353 node /root/miniconda3/bin/configurable-http-proxy --ip 0.0.0.0 --port 9999 --api-ip 127.0.0.1 --api-port 8001 --error-target http://127.0.0.1:9081/hub/error --log-level info
 
-Aug 17 18:03:15 host jupyterhub[158352]: 18:03:15.448 [ConfigProxy] info: 200 GET /api/routes
-Aug 17 18:03:15 host jupyterhub[158352]: [D 2023-08-17 18:03:15.448 JupyterHub proxy:880] Proxy: Fetching GET http://127.0.0.1:8001/api/routes
-Aug 17 18:03:15 host jupyterhub[158352]: 18:03:15.452 [ConfigProxy] info: 200 GET /api/routes
-Aug 17 18:03:15 host jupyterhub[158352]: [D 2023-08-17 18:03:15.452 JupyterHub proxy:392] Checking routes
-Aug 17 18:03:15 host jupyterhub[158352]: [I 2023-08-17 18:03:15.453 JupyterHub proxy:477] Adding route for Hub: / => http://127.0.0.1:9081
-Aug 17 18:03:15 host jupyterhub[158352]: [D 2023-08-17 18:03:15.453 JupyterHub proxy:880] Proxy: Fetching POST http://127.0.0.1:8001/api/routes/
-Aug 17 18:03:15 host jupyterhub[158352]: 18:03:15.457 [ConfigProxy] info: Adding route / -> http://127.0.0.1:9081
-Aug 17 18:03:15 host jupyterhub[158352]: 18:03:15.458 [ConfigProxy] info: 201 POST /api/routes/
-Aug 17 18:03:15 host jupyterhub[158352]: [I 2023-08-17 18:03:15.458 JupyterHub app:3197] JupyterHub is now running at http://0.0.0.0:9999/
-Aug 17 18:03:15 host jupyterhub[158352]: [D 2023-08-17 18:03:15.459 JupyterHub app:2803] It took 0.626 seconds for the Hub to start
+Mar 26 14:27:45 vps jupyterhub[20328]: 14:27:45.828 [ConfigProxy] info: 200 GET /api/routes
+Mar 26 14:27:45 vps jupyterhub[20328]: 14:27:45.830 [ConfigProxy] info: 200 GET /api/routes
+Mar 26 14:27:45 vps jupyterhub[20328]: [D 2024-03-26 14:27:45.831 JupyterHub proxy:392] Checking routes
+Mar 26 14:27:45 vps jupyterhub[20328]: [I 2024-03-26 14:27:45.831 JupyterHub proxy:477] Adding route for Hub: / => http://127.0.0.1:9081
+Mar 26 14:27:45 vps jupyterhub[20328]: [D 2024-03-26 14:27:45.831 JupyterHub proxy:880] Proxy: Fetching POST http://127.0.0.1:8001/api/routes/
+Mar 26 14:27:45 vps jupyterhub[20328]: 14:27:45.834 [ConfigProxy] info: Adding route / -> http://127.0.0.1:9081
+Mar 26 14:27:45 vps jupyterhub[20328]: 14:27:45.835 [ConfigProxy] info: Route added / -> http://127.0.0.1:9081
+Mar 26 14:27:45 vps jupyterhub[20328]: 14:27:45.835 [ConfigProxy] info: 201 POST /api/routes/
+Mar 26 14:27:45 vps jupyterhub[20328]: [I 2024-03-26 14:27:45.836 JupyterHub app:3245] JupyterHub is now running at http://0.0.0.0:9999/
+Mar 26 14:27:45 vps jupyterhub[20328]: [D 2024-03-26 14:27:45.836 JupyterHub app:2852] It took 0.723 seconds for the Hub to start
+
 
 ```
 
 
-## 安装jupyterlab插件
+## 安装插件
 
-### debugger
 
 ```shell
+# debugger
 conda install xeus-python=0.8.0 -c conda-forge
 jupyter labextension install @jupyterlab/debugger
+# toc
+jupyter labextension install @jupyterlab/toc
+# jupyter-matplotlib
+pip install ipympl
+jupyter labextension install @jupyter-widgets/jupyterlab-manager jupyter-matplotlib
 ```
 
 ## 参考链接
