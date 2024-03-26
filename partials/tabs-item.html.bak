@@ -1,0 +1,17 @@
+{%- if not nav_item.children %}
+    <li class="navbar-dropdown-item">
+        <a href="{{ nav_item.url  | url }}" aria-label="{{ nav_item.title }}"> {{ nav_item.title }}</a>
+    </li>
+{%- else %}
+    <li class="navbar-dropdown-item">
+        <h4 class="navbar-dropdown-subtitle">
+            <a href="#" aria-label="{{ nav_item.title }}"> {{ nav_item.title }}</a>
+        </h4>
+        <ul class="navbar-dropdown-subitem-wrapper">
+            {%- for nav_item in nav_item.children %}
+                {% include "partials/tabs-item-sub.html" %}
+            {%- endfor %}
+        </ul>
+    </li>
+{%- endif %}
+
