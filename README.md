@@ -18,3 +18,14 @@ mkdocs是一个用于编写文档的工具，它的优点有：
 4. 方便的部署到github pages
 5. 使用 Python 编写, 可以方便的扩展
 6. 支持多种格式的问题，例如md，ipynb, py等(ipynb和py格式需要安装插件)
+
+## 环境搭建
+
+```bash
+# 创建 conda 环境
+conda activate -n docs python==3.11
+
+# 安装 pip 依赖
+pip install -r requirements.txt 
+
+```

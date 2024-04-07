@@ -7,13 +7,13 @@
 
 ## ZeRO 发展
 
-- [ZeRO](https://www.microsoft.com/en-us/research/blog/zero-deepspeed-new-system-optimizations-enable-training-models-with-over-100-billion-parameters/) 2020年2月
-- [ZeRO-2](https://www.microsoft.com/en-us/research/blog/zero-2-deepspeed-shattering-barriers-of-deep-learning-speed-scale/) 2020年5月
-- [ZeRO-offload](https://arxiv.org/abs/2101.06840) 2021年1月
-- [ZeRO3-offload](https://www.deepspeed.ai/2021/03/07/zero3-offload.html) 2021年3月
-- [ZrRO-Infinty](https://www.microsoft.com/en-us/research/blog/zero-infinity-and-deepspeed-unlocking-unprecedented-model-scale-for-deep-learning-training/) 2021年4月
-- [ZrRO++](https://www.microsoft.com/en-us/research/blog/deepspeed-zero-a-leap-in-speed-for-llm-and-chat-model-training-with-4x-less-communication/) 2023年6月
-- [ZeRO-offload++](https://github.com/microsoft/DeepSpeed/tree/master/blogs/deepspeed-offloadpp) 2023年11月
+- [ZeRO](https://www.microsoft.com/en-us/research/blog/zero-deepspeed-new-system-optimizations-enable-training-models-with-over-100-billion-parameters/) 2020年2月，ZeRO通过优化模型和优化器状态的存储以及通信机制，使得可以高效地训练拥有数十亿甚至上百亿参数的模型。
+- [ZeRO-2](https://www.microsoft.com/en-us/research/blog/zero-2-deepspeed-shattering-barriers-of-deep-learning-speed-scale/) 2020年5月，ZeRO-2，对优化器状态和梯度分片。
+- [ZeRO-offload](https://arxiv.org/abs/2101.06840) 2021年1月，ZeRO-offload利用了内存，降低了对GPU显存的需求（使用的是ZeRO-2级别），可以训练更大的模型。
+- [ZeRO3-offload](https://www.deepspeed.ai/2021/03/07/zero3-offload.html) 2021年3月，ZeRO-offload 支持ZeRO-3 级别。
+- [ZeRO-Infinty](https://www.microsoft.com/en-us/research/blog/zero-infinity-and-deepspeed-unlocking-unprecedented-model-scale-for-deep-learning-training/) 2021年4月，ZeRO-Infinty利用了内存和SSD，打破 GPU 内存墙以实现超大规模深度学习。
+- [ZeRO++](https://www.microsoft.com/en-us/research/blog/deepspeed-zero-a-leap-in-speed-for-llm-and-chat-model-training-with-4x-less-communication/) 2023年6月，做了一些优化，比ZeRO-3训练速度提示了约2倍的加速。
+- [ZeRO-offload++](https://github.com/microsoft/DeepSpeed/tree/master/blogs/deepspeed-offloadpp) 2023年11月，在ZeRO3-offload的基础上做了一些优化，能提供6倍的训练速度。
 
 
 
