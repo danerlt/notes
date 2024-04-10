@@ -51,20 +51,22 @@ theme:
   # 调色板
   palette:
     # 颜色方案 默认为浅色模式
-    - scheme: default
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
       # 主色调 用于标题、侧边栏、文本链接和其他几个组件
-      primary: purple  # 紫色
+      primary: light blue  # 浅蓝色
       # 强调颜色用于表示可以进行交互的元素，例如悬停链接、按钮和滚动条。
-      accent: blue # 蓝色
+      accent: deep purple # 深紫色
       toggle:
-        icon: material/brightness-7
+        icon: material/weather-sunny
         name: 切换到深色模式
     # 深色模式
-    - scheme: slate
-      primary: indigo
-      accent: indigo
+    - media: "(prefers-color-scheme: dark)"    
+      scheme: slate
+      primary: cyan # 青色
+      accent: deep purple # 深紫色
       toggle:
-        icon: material/brightness-4
+        icon: material/weather-night
         name: 切换到浅色模式
   # 字体
   font:
@@ -147,14 +149,14 @@ extra_css:
 #  - https://fastapi.tiangolo.com/css/termynal.css
 #  - https://fastapi.tiangolo.com/css/custom.css
 extra_javascript:
-  - javascripts/katex.js
   - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.js
   - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/contrib/auto-render.min.js
-  - assets/javascripts/mathjax.js
   - https://polyfill.io/v3/polyfill.min.js?features=es6
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
   - https://cdnjs.loli.net/ajax/libs/pangu/3.3.0/pangu.min.js
   - https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js
+  - assets/javascripts/mathjax.js
+  - assets/javascripts/katex.js
 #  - https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/7.12.1/polyfill.min.js
 #  - https://fastapi.tiangolo.com/js/termynal.js
 #  - https://fastapi.tiangolo.com/js/custom.js
