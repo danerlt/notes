@@ -61,7 +61,7 @@ yum install pciutils -y
 
 首先在 [https://www.nvidia.cn/Download/index.aspx?lang=cn](https://www.nvidia.cn/Download/index.aspx?lang=cn) 上输入显卡型号、操作系统、CUDA Toolkit版本，然后搜索,示例如下：
 
-!![image-20240126110700869](https://danerlt-1258802437.cos.ap-chongqing.myqcloud.com/images/image-20240126110700869.png)
+![image-20240126110700869](https://danerlt-1258802437.cos.ap-chongqing.myqcloud.com/images/image-20240126110700869.png)
 
 然后点击下载
 
@@ -188,7 +188,7 @@ sh NVIDIA-Linux-x86_64-535.154.05.run -no-x-check
 
 ![image-20240126110346799](https://danerlt-1258802437.cos.ap-chongqing.myqcloud.com/images/image-20240126110346799.png)
 
-提示没有`cc`命令，需要安装`devtoolset-11-toolchain`，首先在`/etc/yum.repos.d/CentOS-SCLo-rh.repo`中添加内容：
+提示没有`cc`命令，需要安装 gcc ,通过`devtoolset-11-toolchain`安装gcc, g++，首先在`/etc/yum.repos.d/CentOS-SCLo-rh.repo`中添加内容：
 
 ```tex
 # CentOS-SCLo-rh.repo
