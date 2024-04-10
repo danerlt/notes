@@ -143,21 +143,21 @@ markdown_extensions:
 
 
 extra_css:
-  - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.css
-#  - assets/stylesheets/bootstrap.min.css
-#  - assets/stylesheets/my.css
+- assets/stylesheets/bootstrap.min.css
+- https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.css
+- assets/stylesheets/my.css
 #  - https://fastapi.tiangolo.com/css/termynal.css
 #  - https://fastapi.tiangolo.com/css/custom.css
 extra_javascript:
+# 数学公式
+  - assets/javascripts/mathjax.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js  
+  - assets/javascripts/katex.js
   - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.js
   - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/contrib/auto-render.min.js
-  - https://polyfill.io/v3/polyfill.min.js?features=es6
-  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
   - https://cdnjs.loli.net/ajax/libs/pangu/3.3.0/pangu.min.js
   - https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js
-  - assets/javascripts/mathjax.js
-  - assets/javascripts/katex.js
-#  - https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/7.12.1/polyfill.min.js
 #  - https://fastapi.tiangolo.com/js/termynal.js
 #  - https://fastapi.tiangolo.com/js/custom.js
 

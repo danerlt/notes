@@ -1,75 +1,65 @@
 <!-- 版权信息 -->
 <!-- Set from config but allow override -->
-<!-- {% set disqus = config.extra.disqus %} {% if page and page.meta and page.meta.disqus is string %} {% set disqus = page.meta.disqus
-  %} {% endif %}
-{% set copyright = config.extra.copyright %} {% if page and page.meta and page.meta.copyright is string %} {% set copyright = page.meta.copyright
-  %} {% endif %}
-{% set authors = 'danerlt' %} {% if page and page.meta and page.meta.author is string %} {% set authors = page.meta.author
-  %} {% endif %}
-<hr><blockquote class="page-copyright">
-  <span><i class="md-icon">{% include ".icons/material/wrench.svg" %}</i>本页面最近更新：</span><span class="facts_modified"></span>，<a class="edit_history">更新历史</a><br>
-  <span><i class="md-icon">{% include ".icons/material/pencil.svg" %}</i>发现错误？想一起完善？ <a href="{{ page.edit_url }}" title="{{ lang.t('edit.link.title') }}" class="page_edit_url">在 GitHub 上编辑此页！</a></span><br>
-  <span><i class="md-icon">{% include ".icons/material/account-multiple.svg" %}</i>本页面贡献者：</span><span class="page_contributors">{{ authors }}</span><br>
-  <span><i class="md-icon">{% include ".icons/material/copyright.svg" %}</i>本页面的全部内容在 <strong>{{ copyright }}</strong> 协议之条款下提供，附加条款亦可能应用</span>
-</blockquote> -->
+{% set disqus = config.extra.disqus %} {% if page and page.meta and page.meta.disqus is string %} {% set disqus =
+page.meta.disqus
+%} {% endif %}
+{% set copyright = config.extra.copyright %} {% if page and page.meta and page.meta.copyright is string %} {% set
+copyright = page.meta.copyright
+%} {% endif %}
+{% set authors = 'danerlt' %} {% if page and page.meta and page.meta.author is string %} {% set authors =
+page.meta.author
+%} {% endif %}
+<hr>
+<blockquote class="page-copyright">
+  <span><i class="md-icon">{% include ".icons/material/wrench.svg" %}</i>本页面最近更新：</span><span
+    class="facts_modified"></span>，<a class="edit_history">更新历史</a><br>
+  <span><i class="md-icon">{% include ".icons/material/copyright.svg" %}</i>本页面的全部内容在 <strong>{{ copyright }}</strong>
+    协议之条款下提供，附加条款亦可能应用</span>
+</blockquote>
 
 <!-- 评论系统 -->
 
 <h2 id="__comments">{{ lang.t("meta.comments") }}</h2>
 <!-- Insert generated snippet here -->
-<script src="https://giscus.app/client.js"
-        data-repo="danerlt/notes-commonts"
-        data-repo-id="R_kgDOK9YxVQ"
-        data-category="Announcements"
-        data-category-id="DIC_kwDOK9YxVc4Cb-Sn"
-        data-mapping="pathname"
-        data-strict="0"
-        data-reactions-enabled="1"
-        data-emit-metadata="0"
-        data-input-position="bottom"
-        data-theme="preferred_color_scheme"
-        data-lang="zh-CN"
-        crossorigin="anonymous"
-        async>
-</script>
+<script src="https://giscus.app/client.js" data-repo="danerlt/notes-commonts" data-repo-id="R_kgDOK9YxVQ"
+  data-category="Announcements" data-category-id="DIC_kwDOK9YxVc4Cb-Sn" data-mapping="pathname" data-strict="0"
+  data-reactions-enabled="1" data-emit-metadata="0" data-input-position="bottom" data-theme="preferred_color_scheme"
+  data-lang="zh-CN" crossorigin="anonymous" async>
+  </script>
 
 
 <!-- Synchronize Giscus theme with palette -->
 <script>
-    var giscus = document.querySelector("script[src*=giscus]")
+  var giscus = document.querySelector("script[src*=giscus]")
 
-    // Set palette on initial load
-    var palette = __md_get("__palette")
-    if (palette && typeof palette.color === "object") {
-      var theme = palette.color.scheme === "slate"
-        ? "transparent_dark"
-        : "light"
+  // Set palette on initial load
+  var palette = __md_get("__palette")
+  if (palette && typeof palette.color === "object") {
+    var theme = palette.color.scheme === "slate"
+      ? "transparent_dark"
+      : "light"
 
-      // Instruct Giscus to set theme
-      giscus.setAttribute("data-theme", theme)
-    }
+    // Instruct Giscus to set theme
+    giscus.setAttribute("data-theme", theme)
+  }
 
-    // Register event handlers after documented loaded
-    document.addEventListener("DOMContentLoaded", function() {
-      var ref = document.querySelector("[data-md-component=palette]")
-      ref.addEventListener("change", function() {
-        var palette = __md_get("__palette")
-        if (palette && typeof palette.color === "object") {
-          var theme = palette.color.scheme === "slate"
-            ? "transparent_dark"
-            : "light"
+  // Register event handlers after documented loaded
+  document.addEventListener("DOMContentLoaded", function () {
+    var ref = document.querySelector("[data-md-component=palette]")
+    ref.addEventListener("change", function () {
+      var palette = __md_get("__palette")
+      if (palette && typeof palette.color === "object") {
+        var theme = palette.color.scheme === "slate"
+          ? "transparent_dark"
+          : "light"
 
-          // Instruct Giscus to change theme
-          var frame = document.querySelector(".giscus-frame")
-          frame.contentWindow.postMessage(
-            { giscus: { setConfig: { theme } } },
-            "https://giscus.app"
-          )
-        }
-      })
+        // Instruct Giscus to change theme
+        var frame = document.querySelector(".giscus-frame")
+        frame.contentWindow.postMessage(
+          { giscus: { setConfig: { theme } } },
+          "https://giscus.app"
+        )
+      }
     })
+  })
 </script>
-
-
-
-
