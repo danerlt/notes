@@ -1,11 +1,11 @@
-# 个人笔记
-
-包含: Python 基础, Python 部分源码, Flask, 数据库原理, MySQL, Redis, MongoDB,
-Docker, k8s, CI&CD, Linux, DevOps, 分布式, 中间件, 开发工具, Git, IDE, 源码阅读，读书笔记, 开源项目...
+# notes
+个人常用笔记
 
 网站链接: [https://danerlt.github.io/notes/](https://danerlt.github.io/notes/)
 
-![效果图](https://danerlt-1258802437.cos.ap-chongqing.myqcloud.com/2023-05-09-345dzA.png)
+效果图： 
+
+![效果图](https://danerlt-1258802437.cos.ap-chongqing.myqcloud.com/images/20240410061332.png)
 
 ## 1. 为什么要写这个笔记
 
@@ -13,9 +13,7 @@ Docker, k8s, CI&CD, Linux, DevOps, 分布式, 中间件, 开发工具, Git, IDE,
 2. 好记性不如烂笔头，方便自己复习
 
 ## 2. 为什么要用mkdocs
-
 mkdocs是一个用于编写文档的工具，它的优点有：
-
 1. 有很多优秀的主题可供选择
 2. 自定义配置简单
 3. 可以编书写边预览，预览速度比vuepress快多了
@@ -23,105 +21,13 @@ mkdocs是一个用于编写文档的工具，它的优点有：
 5. 使用 Python 编写, 可以方便的扩展
 6. 支持多种格式的问题，例如md，ipynb, py等(ipynb和py格式需要安装插件)
 
+## 环境搭建
 
+```bash
+# 创建 conda 环境
+conda activate -n docs python==3.11
 
+# 安装 pip 依赖
+pip install -r requirements.txt 
 
-## 搭建步骤
-
-### 安装依赖
-
-```shell
-pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
-
-### 本地启动服务
-```shell
-python main.py
-```
-
-### 添加内容
-
-在`docs`目录下添加目录和文件
-
-如果需要自定义排序，文件夹和 `markdown` 文件名称必须是数字开头，例如`01_操作手册`，`02_安装指南.md`。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
