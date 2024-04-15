@@ -223,4 +223,5 @@ ZeRO-Offload++， 通过协作 CPU/GPU 双流将训练吞吐量提高 6 倍。�
 - [ZeRO Infinity 论文](https://arxiv.org/abs/2104.07857)
 - [DeepSpeed ZeRO Totorials](https://www.deepspeed.ai/tutorials/zero/)
 - [DeepSpeed之ZeRO系列：将显存优化进行到底](https://basicv8vc.github.io/posts/zero/)
-- [如何评价微软开源的分布式训练框架deepspeed？ - 猛猿的回答](https://www.zhihu.com/question/371094177/answer/2964829128)
+- [如何评价微软开源的分布式训练框架deepspeed？ - 猛猿的回答](
+    https://www.zhihu.com/question/371094177/answer/2964829128)
