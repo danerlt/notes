@@ -201,7 +201,7 @@ def test_create_index():
   'last_modified_date',
   'last_accessed_date'],
  'relationships': {},
- 'text': '\n\n\n![](img/logo-long-chatchat-trans-v2.png)\r\n\r\n������ [READ THIS IN ENGLISH](README_en.md)\r\n������ [日本語で読む](README_ja.md)\r\n\r\n������ **LangChain-Chatchat** (原 Langchain-ChatGLM)\r\n\r\n基于 ChatGLM 等大语言模型与 Langchain 等应用框架实现，开源、可离线部署的检索增强生成(RAG)大模型知识库项目。\r\n\r\n',
+ 'text': '\n\n\n![](img/logo-long-chatchat-trans-v2.png)\r\n\r\n�� [READ THIS IN ENGLISH](README_en.md)\r\n�� [日本語で読む](README_ja.md)\r\n\r\n�� **LangChain-Chatchat** (原 Langchain-ChatGLM)\r\n\r\n基于 ChatGLM 等大语言模型与 Langchain 等应用框架实现，开源、可离线部署的检索增强生成(RAG)大模型知识库项目。\r\n\r\n',
  'start_char_idx': None,
  'end_char_idx': None,
  'text_template': '{metadata_str}\n\n{content}',
