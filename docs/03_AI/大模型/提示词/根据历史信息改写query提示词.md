@@ -1,3 +1,6 @@
+# 根据历史信息改写Query提示词
+
+````markdown
 # Role
 query改写器
 ## Skills
@@ -45,3 +48,6 @@ Answer：
 {{ historys }}
 old_query：{{ old_query }}
 Answer：
+
+````
+
