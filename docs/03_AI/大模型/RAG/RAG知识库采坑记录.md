@@ -161,6 +161,8 @@ IVF（Inverted File）算法是一种用于高效近似最近邻搜索（Approxi
 
 #### BM25检索
 
+rank_bm25 库，当`keyword`占比`corpus`的50%时，会导致分数为0,这个问题截止2024-6-17 22:34:52还没有修复。我给它提了PR，作者还没合并。[BUG链接见这里](https://github.com/dorianbrown/rank_bm25/issues/39), [PR 链接见这里](https://github.com/dorianbrown/rank_bm25/pull/40)
+
 #### 检索后处理
 
 ### 多个检索器
@@ -170,6 +172,8 @@ IVF（Inverted File）算法是一种用于高效近似最近邻搜索（Approxi
 #### 合并后处理
 
 ## 提示词模板
+
+Langchain和llamaIndex的prompt模板中默认都是使用f-string去格式化的。如果提示词模板中出现了大括号如`{xxx}`，就会格式化报错。Langchain框架可以通过参数设置成jinja2来格式化。LlamaIndex框架暂时没有修复这个问题。
 
 ## 大模型相关
 
