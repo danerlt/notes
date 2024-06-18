@@ -51,9 +51,7 @@ pip install llama-index-readers-file
 - SimpleDirectoryReader：读取一个目录下的文件，根据文件后缀匹配对应的reader，可以通过`input_files`参数指定要读取的文件名。
 - PDFReader: 使用`pypdf`库加载PDF文件。从page中提取text，图片直接丢弃掉。
 - DocxReader：使用`docx2txt`库加载word文件，**图片直接丢弃掉，表格信息直接变成文本，丢失行和列的信息，慎用。**
-- MarkdownReader：将所有行读取出来，然后按照`#`分割，将header和content拼接成一个Document，拼接时会将`#`
-  去掉，这个问题还没人反馈。第一个`#`
-  后面没有内容会丢失第一个Document，我给LlamaIndex提了[这个BUG](https://github.com/run-llama/llama_index/issues/13283)。
+- MarkdownReader：将所有行读取出来，然后按照`#`分割，将header和content拼接成一个Document，拼接时会将`#`去掉，这个问题还没人反馈。第一个`#`前面有内容的话，会将第一个`#`前面的内容丢失。我给LlamaIndex提了[这个BUG](https://github.com/run-llama/llama_index/issues/13283)。
 
 ## 分片
 
