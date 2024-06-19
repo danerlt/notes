@@ -294,6 +294,10 @@ pendulum = "^2.1"
 
 它需要包名称和版本约束的映射。
 
+版本约束如下：
+
+![](https://danerlt-1258802437.cos.ap-chongqing.myqcloud.com/images/20240614163549.png)
+
 此外，还可以使用 `poetry add` 命令，而不是手动修改 `pyproject.toml` 文件。
 
 ```
