@@ -53,10 +53,34 @@ pip install llama-index-readers-file
 - DocxReader：使用`docx2txt`库加载word文件，**图片直接丢弃掉，表格信息直接变成文本，丢失行和列的信息，慎用。**
 - MarkdownReader：将所有行读取出来，然后按照`#`分割，将header和content拼接成一个Document，拼接时会将`#`去掉，这个问题还没人反馈。第一个`#`前面有内容的话，会将第一个`#`前面的内容丢失。我给LlamaIndex提了[这个BUG](https://github.com/run-llama/llama_index/issues/13283)。
 
+## Unstructured库
+
+`Unstructured`库为RAG应用和微调提供了很多处理非结构化文档的工具。是一个非常强大的文档解析库。
+
+有3中使用方式。
+
+- api：使用api key调用Unstructured的接口解析文件。由 Unstructured 托管，数据处理上限为 1000 页，提交给免费 API 的文档会被`Unstructured`的模型训练和评估。
+- Sass 平台：·Unstructured`托管的Sass API，可扩展和安全。数据保持私密。
+- 开源框架`Unstructured`库：适合原型设计。 `unstructured` 库提供了一个开源工具包，旨在简化各种数据格式的摄取和预处理，包括图像和基于文本的文档，如 PDF、HTML 文件、Word 文档。
+
+开源框架`Unstructured`可以使用Docker运行或pip安装。 
+
+安装`Unstructured`开源库
+```bash
+# 安装所有格式的文档解析
+pip install "unstructured[all-docs]"
+# 安装指定格式的文件解析
+pip install "unstructured[docx,md,pdf,csv,docx]"
+```
+
+
+
+
+
+
 ## 分片
 
-文档加载完之后Document对象的长度可能比较长，有可能超过LLM的上下文窗口。所以需要将Document对象进行分片，拆分成小的文本块(
-chunk)。
+文档加载完之后Document对象的长度可能比较长，有可能超过LLM的上下文窗口。所以需要将Document对象进行分片，拆分成小的文本块(chunk)。
 
 Langchain和LlamaIndex常见的splitter对比如下：
 
@@ -126,6 +150,47 @@ IVF（Inverted File）算法是一种用于高效近似最近邻搜索（Approxi
 
 我们项目中使用了bge-base-zh-v1.5和m3e-base。最近出来的bge-m3和bce-embedding-base_v1也比较火，可以尝试使用。
 
+最开始Embeding模型用的是bge-base-zh-v1.5，在我们实际的测试中，我们主观上判断有一些分片跟问题是不相关的。但是使用向量数据库检索出来是比较相似的，导致回答效果不好，将Embeding模型切换到m3e-base后，上述的问题效果就好了很多。
+
+后面发现切换到m3e-base了还是有一些问题相似度比较的不好，例如dev环境和开发环境，test环境和测试环境，这个用相似度算法算出来不相似，但是用户需要这类问题要相似性较好。就对bge-base-zh-v1.5模型做了微调，微调之后就解决了签名的问题。
+
+
+
+### 存储
+
+在LlamaIndex中，存储相关的类型主要分为
+
+- Document store: 用来存储node(Document` 继承自 `TextNode`，`TextNode`继承自`BaseNode)，一般是用来存储分片后的text和元数据。
+- Index Store：用来存储索引，索引是构造了一个结构将Document store和Vector Store中的数据的一个关联关系。一般采用Redis存储索引。
+- Vector Store：用来存储向量数据，有的向量数据库支持存储元数据（可以把分片后的text存进去），比如pgvector,Milvus，qdrant都可以。
+- Key Value Store：一般不会直接使用，是IndexStore或DocumentStore的父类。
+
+![image-20240619164119734](https://danerlt-1258802437.cos.ap-chongqing.myqcloud.com/images/image-20240619164119734.png)
+
+最开始我们只使用了milvus向量数据库，用Milvus同时存储向量和文档数据。
+
+在添加Bm25检索的时候发现，BM25检索需要将所有的text先查询出来，然后使用BM25算法计算分数。LlamaIndex中的VectorRetriever在检索的时候必须通过向量字段+metadata字段（一般是JSON格式）才能过滤，如果要去掉向量字段，需要根据向量数据库的接口去开发过滤的方法，比较麻烦。同时，向量数据库在对metadata字段过滤的时候，性能没有传统的数据库性能好。
+
+然后我将Document Store加上了，并且使用postgreSQL数据库充当Document Store，用Redis作为Index Store。然后发现在查询文档的时候，node的格式是一个层数较多的JSON，使用postgreSQL查询性能慢，查询SQL编写复杂。于是将postgreSQL数据库更换成对JSON格式更友好的MongoDB数据库。使用MongoDB存储分配后的node数据，并且MongoDB可以针对JSON中的某些字段创建索引来加快查询速度。
+
+在我们的项目中，用户需要新建一个数据集，然后对这个数据集上传多个文件。用户在对话的时候必须选择某一个数据集进行对话。
+
+在查询相关文档的时候首先需要先根据数据集的ID查询到对应的文件ID，然后通过文件ID查询到对应的IndexId,然后去Redis中将所有的node_id查询到，然后通过向量数据库使用相似度算法查询对应的node_id列表的数据，然后返回topK个数据。
+
+查询的链路太长，如果数据量大的话，node_ids的列表会很大，可能会导致查询时间很长。
+
+为了解决这个问题，我将数据集ID，文件ID，文件名等放到node对象的metadata属性中，然后存储到MongoDB和向量数据库的时候都会存储到。在检索的时候添加根据数据集ID过滤的条件。
+
+
+
+后来调研发现qdrant的性能比milvus更好，并且qdrant支持Hybrid Search，Milvus不支持。就将向量数据库切换到了Qdrant了。（PS：我们最开始使用的Milvus版本是2.3，它还不支持Hybrid Search，2.4版本已经支持了）
+
+
+
+
+
+
+
 ## 检索前处理
 
 ### 意图识别
@@ -139,6 +204,10 @@ IVF（Inverted File）算法是一种用于高效近似最近邻搜索（Approxi
 
 等用户对应意图的所有信息补全之后再进行检索和回答。
 
+流程图如下：
+
+![image-20240619161902911](https://danerlt-1258802437.cos.ap-chongqing.myqcloud.com/images/image-20240619161902911.png)
+
 ### 重写query
 
 在我们实际的测试中，我们发现RAG系统在多轮对话中会遇到一些问题。
@@ -149,9 +218,76 @@ IVF（Inverted File）算法是一种用于高效近似最近邻搜索（Approxi
 
 核心思想是使用大模型根据历史信息和旧的query进行重写成功新的query，然后拿新的query去检索。
 
+
+
+**注意点：**
+
+- 如果历史信息和当前query不相关时，让大模型去除的效果不好。可以先调用rerank model将跟query相关的历史信息找出来。再改写。
+- 提示词模板中有JSON输出的时候只能用LangChain框架，并且需要指定使用jinja2格式化。
+
+
+
+提示词示例如下：
+
+```
+# Role
+query改写器
+## Skills
+- 精通中英文
+- 精通分析总结；优秀的写作能力；
+- 能够理解文本
+- 精通JSON数据格式
+## Action
+- 根据提供的历史问答列表和一个旧的query，改写新的query，并以JSON格式输出
+## Constrains
+- 历史问答中有可能跟当前query不相关，你需要先将不相关的问答去掉，然后再改写。如果历史问答都不相关则不进行改写。
+- 在改写过程中，确保语言风格一致。
+- 将旧query中的代词根据历史问答的内容替换成相应的词语，同时不改变旧query的原意。
+- 必须保证你的结果只包含一个合法的JSON格式
+## Format
+- 对应JSON的key为：old_query, new_query
+## Example
+--------------------------------------------------------------------------------------------
+历史问答列表：
+1. 问题：哪一年是法国大革命开始的？回答：1789年是法国大革命的开始。
+2. 问题：艾菲尔铁塔建于哪一年？回答：艾菲尔铁塔建于1889年。
+3. 问题：dev环境的RabbitMQ地址是什么？回答：dev环境的RabbitMQ地址是 dev.example.com:5672。
+old_query：用户名密码是多少？
+Answer：
+```json
+{
+  "old_query": "用户名密码是多少？",
+  "new_query": "dev环境的RabbitMQ的用户名密码是多少？"
+}
+```--------------------------------------------------------------------------------------------
+历史问答列表：
+1. 问题：哪一年是法国大革命开始的？回答：1789年是法国大革命的开始。
+2. 问题：艾菲尔铁塔建于哪一年？回答：艾菲尔铁塔建于1889年。
+3. 问题：中华人民共和国是哪一年成立的？回答：中华人民共和国成立于1949年。
+old_query：Redis的用户名密码是多少？
+Answer：
+```json
+{
+  "old_query": "Redis的用户名密码是多少？",
+  "new_query": "Redis的用户名密码是多少？"
+}
+```--------------------------------------------------------------------------------------------
+## History and old query
+历史问答列表：
+{{ historys }}
+old_query：{{ old_query }}
+Answer：
+```
+
+
+
 ## 检索策略
 
-### 单个检索器
+在我们的项目中检索策略叫做查询引擎（queryEngine)，参考LlamaIndex中的QueryEngine的原理，但是不做大模型生成，只做检索。
+
+检索策略分为两种类型，单个查询查询引擎，多个查询引擎（这个我们叫做组合索引）。
+
+### 单个查询查询引擎
 
 #### 查询转换
 
@@ -163,7 +299,7 @@ rank_bm25 库，当`keyword`占比`corpus`的50%时，会导致分数为0,这个
 
 #### 检索后处理
 
-### 多个检索器
+### 多个查询引擎
 
 #### 合并策略
 
@@ -312,3 +448,4 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 ## 参考资料：
 
 - [如何选择向量数据库](https://blog.lidaxia.io/2024/05/07/vector-db-selection/)
+- [一文通透Text Embedding模型：从text2vec、openai-text embedding到m3e、bge(https://blog.csdn.net/v_JULY_v/article/details/135311471)
