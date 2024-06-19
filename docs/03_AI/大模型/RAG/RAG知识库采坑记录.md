@@ -287,35 +287,244 @@ Answer：
 
 检索策略分为两种类型，单个查询查询引擎，多个查询引擎（这个我们叫做组合索引）。
 
+查询引擎的流程图如下：
+
+![](https://danerlt-1258802437.cos.ap-chongqing.myqcloud.com/images/20240619173022.png)
+
 ### 单个查询查询引擎
+
+三个查询引擎主要分为3个步骤:
+
+- 第一步：查询转换（QueryTransform）
+- 第二步：使用retriever（VectorRetriever或者BM25Retriever)进行检索
+- 第三步：对node列表执行postprocess操作，postprocess操作是一个列表，链式的执行postprocess操作。
 
 #### 查询转换
 
+主要实现了两种方法：
+
+- HyDE：使用大模型针对query生成一个假设性的回答。然后根据回答去检索相关的文档。**实测下来这个方法效果很差，不建议使用。**
+- MultiQuestion：使用大模型针对query生成多个相似的问题，然后根据原问题和相似的问题去检索。**实测这种方法能提高一些检索的精度，但是这种方法多了一次大模型接口调用，会导致接口的响应时间变长，需要实际时间情况选择。在我们的项目中没有使用这种方法。**
+
+可以参考 [https://github.com/langchain-ai/rag-from-scratch/blob/main/rag_from_scratch_5_to_9.ipynb](https://github.com/langchain-ai/rag-from-scratch/blob/main/rag_from_scratch_5_to_9.ipynb) 查看更多详细信息。
+
+
+
 #### 向量检索
+
+一般的RAG系统的进行向量检索的时候是针对整个向量数据库进行相似度计算，然后返回TopK条结果。
+
+当数据量较少或要求检索到的不相关node较少时，使用topK很大概率会返回无关的node。**所以使用向量检索一定要加后处理去过滤无关的node。**我们目前使用的是按照分数的平均值过滤。
+
+同时为了加快检索效率添加了metadata filter，需要重写`Retriever`的`_build_vector_store_query`方法。
+
+示例如下：
+
+```python
+  def _build_vector_store_query(
+            self, query_bundle_with_embeddings: QueryBundle,
+            dataset_id: str = None
+    ) -> VectorStoreQuery:
+        query = VectorStoreQuery(
+            query_embedding=query_bundle_with_embeddings.embedding,
+            similarity_top_k=self._similarity_top_k,
+            node_ids=self._node_ids,
+            doc_ids=self._doc_ids,
+            query_str=query_bundle_with_embeddings.query_str,
+            mode=self._vector_store_query_mode,
+            alpha=self._alpha,
+            filters=self._filters,
+            sparse_top_k=self._sparse_top_k,
+        )
+        
+		# dataset_id 参数是必传的
+        if dataset_id:
+            dataset_filter = MetadataFilter(key="dataset_id", value=dataset_id, operator=FilterOperator.EQ)
+            if query.filters is None:
+                # 没有其他的filter，那就只使用dataset_id过滤
+                query.filters = MetadataFilters(
+                    filters=[dataset_filter], condition=FilterCondition.AND
+                )
+            else:
+                # 有其他的filter，添加dataset_id过滤的条件
+                q_filters = query.filters.filters
+                q_filters.append(dataset_filter)
+                query.filters = MetadataFilters(filters=[q_filters], condition=FilterCondition.AND)
+        return query
+
+```
+
+
+
+另外在使用MultiQuestion的QueryTransform时，LlamaIndex框架的VectorRetriever默认会先对query进行embeding然后求均值，最后拿着求完均值之后的embeding检索。我认为应该对每一个query都去检索，将所有的query查询合并起来再去重。要实现这个效果，需要重写`_retrieve`方法。示例如下：
+
+```python
+    def _retrieve(
+            self,
+            query_bundle: QueryBundle,
+            dataset_id: str = None
+    ) -> List[NodeWithScore]:
+        logger.debug(f"Vector _retrieve: {dataset_id=}, {query_bundle.query_str=}, {query_bundle.embedding_strs=}")
+        logger.debug(f"is_embedding_query: {self._vector_store.is_embedding_query}")
+        res = []
+        if self._vector_store.is_embedding_query:
+            if query_bundle.embedding is None and len(query_bundle.embedding_strs) > 0:
+                for embedding_str in query_bundle.embedding_strs:
+                    new_query_bundle = QueryBundle(query_str=embedding_str)
+                    new_query_bundle.embedding = self._embed_model.get_text_embedding(
+                        embedding_str
+                    )
+                    one_query_res = self._get_nodes_with_embeddings(
+                        new_query_bundle, dataset_id=dataset_id
+                    )
+                    res.extend(one_query_res)
+            else:
+                res = self._get_nodes_with_embeddings(query_bundle, dataset_id=dataset_id)
+        else:
+            res = self._get_nodes_with_embeddings(query_bundle, dataset_id=dataset_id)
+        logger.debug(f"Vector _retrieve before filter: {len(res)=}")
+        return res
+```
+
+
 
 #### BM25检索
 
+Bm25检索的时候发现，需要将所有的text先查询出来，然后使用BM25算法计算分数。
+
+当query中有中文的时候，需要手动指定停用词，停用词可以针对所有的text使用jieba分词得到。
+
 rank_bm25 库，当`keyword`占比`corpus`的50%时，会导致分数为0,这个问题截止2024-6-17 22:34:52还没有修复。我给它提了PR，作者还没合并。[BUG链接见这里](https://github.com/dorianbrown/rank_bm25/issues/39), [PR 链接见这里](https://github.com/dorianbrown/rank_bm25/pull/40)
+
+修复后的代码如下：
+
+```python
+def tokenize_remove_stopwords(text: str) -> List[str]:
+    # 文本分词
+    seg_list_exact = jieba.lcut(text)
+    result_list = []
+    # 读取停用词库 current_path / "xx.txt"
+    stopwords_hit_path = current_path.joinpath('stopwords_hit.txt')
+    with open(stopwords_hit_path, encoding='utf-8') as f:  # 可根据需要打开停用词库，然后加上不想显示的词语
+        con = f.readlines()
+        stop_words = set()
+        for i in con:
+            i = i.replace("\n", "")  # 去掉读取每一行数据的\n
+            stop_words.add(i)
+    # 去除停用词并且去除单字
+    for word in seg_list_exact:
+        if word not in stop_words and len(word) > 1:
+            result_list.append(word)
+    return result_list
+
+
+class MyBM25Okapi(BM25Okapi):
+    def _calc_idf(self, nd):
+        """
+        BM25Okapi 开源项目中当token占文档比例的50%时，idf计算出来会变成0，导致分数为0，
+        Issues 见： https://github.com/dorianbrown/rank_bm25/issues/39
+        我提交了PR 作者还没有合并，所以先继承这个类，重写它的方法
+        将计算公式修改成下面的公式可以解决这个问题
+        """
+        # collect idf sum to calculate an average idf for epsilon value
+        idf_sum = 0
+        # collect words with negative idf to set them a special epsilon value.
+        # idf can be negative if word is contained in more than half of documents
+        negative_idfs = []
+        for word, freq in nd.items():
+            idf = math.log(self.corpus_size + 1) - math.log(freq + 0.5)
+            self.idf[word] = idf
+            idf_sum += idf
+            if idf < 0:
+                negative_idfs.append(word)
+        self.average_idf = idf_sum / len(self.idf)
+
+        eps = self.epsilon * self.average_idf
+        for word in negative_idfs:
+            self.idf[word] = eps
+
+
+class Bm25Utils(object):
+    def __init__(self, tokenizer=None):
+        self.tokenizer = tokenizer or tokenize_remove_stopwords
+
+    def get_scored_nodes(self, query: str = "", nodes: List[TextNode] = None) -> List[NodeWithScore]:
+        """
+        根据BM25算法计算节点与查询的相似度分数
+        :param query: 查询
+        :param nodes: 节点列表
+        :return: 节点列表，每个节点包含相似度分数
+        """
+        if not nodes:
+            return []
+
+        # filter empty text node
+        corpus = []
+        have_value_nodes = []
+        for node in nodes:
+            content = node.get_content()
+            if content:
+                have_value_nodes.append(node)
+                token = self.tokenizer(content)
+                corpus.append(token)
+        if not corpus:
+            return []
+
+        bm25_api = MyBM25Okapi(corpus)
+        tokenized_query = self.tokenizer(query)
+        doc_scores = bm25_api.get_scores(tokenized_query)
+
+        scored_nodes = []
+        for i, node in enumerate(have_value_nodes):
+            scored_nodes.append(NodeWithScore(node=node, score=float(doc_scores[i])))
+
+        result = sorted(scored_nodes, key=lambda x: x.score or 0.0, reverse=True)
+        return result
+
+
+bm25_utils = Bm25Utils()
+
+```
+
+
 
 #### 检索后处理
 
+
+
 ### 多个查询引擎
+
+
 
 #### 合并策略
 
+
+
 #### 合并后处理
+
+
 
 ## 提示词模板
 
 Langchain和llamaIndex的prompt模板中默认都是使用f-string去格式化的。如果提示词模板中出现了大括号如`{xxx}`，就会格式化报错。Langchain框架可以通过参数设置成jinja2来格式化。LlamaIndex框架暂时没有修复这个问题。
 
+
+
 ## 大模型相关
+
+
 
 ### 模型选择
 
+
+
 ### 模型推理框架
 
+
+
 ### 模型显存占用
+
+
 
 #### 训练
 
