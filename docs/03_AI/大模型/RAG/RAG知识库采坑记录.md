@@ -20,15 +20,13 @@ Langchain框架的文档加载在`langchain_community`包的`document_loaders`
 - CSVLoader：加载CSV文件，csv中的第一行是表格中，将每一行数据的每一列和标题拼接起来拼接成一个Document对象。老版本使用UTF-8编码格式的文件，在windows上自动识别编码有问题。
 - UnstructuredExcelLoader： 使用`unstructured`库加载Excel文件。
 - UnstructuredPDFLoader： 使用`unstructured`库加载PDF文件。
-- PyPDFLoader：使用`pypdf`库加载PDF文件。将page中的text提取出来，图片都使用`rapidocr_onnxruntime`
-  库提取出text，下面的`PDFLoader`的图片也是一样的处理。
+- PyPDFLoader：使用`pypdf`库加载PDF文件。将page中的text提取出来，图片都使用`rapidocr_onnxruntime`库提取出text，下面的`PDFLoader`的图片也是一样的处理。
 - PyPDFium2Loader: 使用`pypdfium2`库加载PDF文件，可以使用HTTP URL加载PDF。
 - PyPDFDirectoryLoader：使用`PyPDFLoader`加载一个目录和子目录下面的所有PDF。
 - PDFMinerLoader：使用`pdfminer`库加载PDF文件，也可以使用HTTP URL加载PDF。
 - WebBaseLoader：加载网页，使用`bs4`库解析。
-- UnstructuredMarkdownLoader: 使用`unstructured`库加载Markdown文件。
-- Docx2txtLoader: 使用`docx2txt`库加载`docx`和`doc`文件，**
-  直接把文件中的文本提取出来，表格会直接变成文本，丢失行和列的信息，图片会直接丢弃掉。慎用**。
+- UnstructuredMarkdownLoader: 使用`unstructured`库加载Markdown文件，首先会使用markdown库将markdown文件解析成html，然后html的解析方法。**实测会将文件中的标题信息，链接信息，图片信息丢弃掉。不要使用。**。
+- Docx2txtLoader: 使用`docx2txt`库加载`docx`和`doc`文件，**会直接把文件中的文本提取出来，表格会直接变成文本，丢失行和列的信息，图片会直接丢弃掉。慎用**。
 - UnstructuredImageLoader：使用`unstructured`库加载图片文件。
 - UnstructuredHTMLLoader: 使用`unstructured`库加载HTML文件。
 
@@ -75,6 +73,19 @@ pip install "unstructured[docx,md,pdf,csv,docx]"
 
 
 
+### 总结
+
+- Docx2txtLoader： **会直接把文件中的文本提取出来，表格会直接变成文本，丢失行和列的信息，图片会直接丢弃掉。慎用**。
+- UnstructuredMarkdownLoader：**实测会将文件中的标题信息，链接信息，图片信息丢弃掉。不要使用。**Markdow文件的加载基于LlamaIndex框架中的MarkdownReader实现。markdown格式的文件在加载的时候按照`#`进行分隔成多个Document。在分片的时候就不再进行分片了。·
+- CSVLoader：使用UTF-8编码格式的文件，在windows上自动识别编码有问题。需要手动指定编码格式。
+- docx2，pdf格式可以转换成markdown格式再使用markdown格式来解析。参考[maxkb项目](https://github.com/1Panel-dev/MaxKB/blob/9479741da3bd0d27b762a106e9f5d2d7aefefae5/apps/common/handle/impl/pdf_split_handle.py)。
+
+
+
+markdown加载实现示例如下：
+
+```
+```
 
 
 
@@ -97,6 +108,7 @@ pip install langchain-text-splitters
 注意点：
 
 - 对于CSV，EXCEL文件常见的方案是将一行当作一个chunk。
+- 对于markdown格式，在加载的时候处理好，不进行分片。
 
 ## 构建索引
 
@@ -547,15 +559,43 @@ Langchain和llamaIndex的prompt模板中默认都是使用f-string去格式化�
 
 ### 模型选择
 
+#### 大模型
+
+最开始我们使用的Chatglm3-6B的模型，在使用过程中，很多问题上下文已经很正确了还是回答不好。后面有切换到qwen1.5-7B，效果也差不多。然后将模型换成qwen1.5-14B-int8的模型，效果有了很明显的提升。但是针对比较复杂的提示词，如根据历史信息重写，或者RAG评估中根据text生成query的效果也不好。
+
+#### Embedding模型
+
+Embeding模型从bge-base-zh到m3e-base到微调beg-base-zh。
+
+#### Rerank模型
+
+Rerank模型使用的是bge-reranker-base，这个模型没有更换过其他的，也没进行微调。实测下来在重排的时候，有些文档跟query其实不是特别的相关，但是rerank的分数比较高。还遇到过最相关的文档分数不是最高的，在倒数第3的问题。为了在垂直领域效果更好，可能需要对rerank模型进行微调。
+
 
 
 ### 模型推理框架
 
+#### Embeding模型推理
+
+Embeding模型使用bge模型使用的是Fastchat框架部署的。huggingface官方使用Rust语言写的[text-embeddings-inference框架](https://github.com/huggingface/text-embeddings-inference)性能非常好，比使用onnx性能还要好一丢丢。后续可以尝试使用这个部署Embeding模型。
+
+#### LLM推理
+
+chatglm3-6b和qwen1.5-7B都是使用的fastchat框架部署的。其中Fastchat对Chatglm3-6B的支持不是很好，有的时候回答会出现中英文混杂的情况。
+
+后面切换到qwen1.5-14B-int8之后使用的vllm框架部署。
+
+还调研过ollam框架，类似与Docker的概念。服务启动之后不能停止，只能删除，删除之后模型文件就没有了，下一次启动又要重新下载模型。体验不好就没用了。
+
+还了解过llama.cpp框架，没有实际用过。
+
+#### Rerank模型推理
+
+Rerank模型是使用FastAPI框架将`SentenceTransformers `做了一下封装实现的重排接口。
+
 
 
 ### 模型显存占用
-
-
 
 #### 训练
 
@@ -632,13 +672,17 @@ int4 7 * 0.5 = 3.5 GB
 
 实测：
 
-qwen-7b, chatglm36b FP16 加载显存大约14GB左右。
+- chatglm3-6B 使用fastchat框架显存占用14GB左右。
 
-Qwen1.5-14B-Chat-GPTQ-Int8 使用vllm部署，显存占用在30G左右。
+- qwen1.5-7B 使用fastchat框架显存占用16GB左右。
+- embeding、rerank模型显存占用较小
+- qwen1.5-14B-int8，使用vllm框架推理显存占用30G左右。
 
 ### 大模型微调
 
-llama2 7B 模型使用 zero
+llama2 7B 模型使用 zero3-offload 在2张A100(40G)，2张V100（32G）多机多卡上能成功进行全量二次预训练，batch_size设置成1。
+
+
 
 ## 其他
 
