@@ -109,6 +109,7 @@ pip install langchain-text-splitters
 
 - 对于CSV，EXCEL文件常见的方案是将一行当作一个chunk。
 - 对于markdown格式，在加载的时候处理好，不进行分片。
+- SentenceSplitter和RecursiveCharacterTextSplitter原理一样，先拆成最小的句子，然后合并到chunk_size大小。
 
 ## 构建索引
 
@@ -122,7 +123,6 @@ pip install langchain-text-splitters
 - Milvus
 - Faiss
 - Weaviate
-- Pinecone
 - Qdrant
 
 传统的数据库，添加了向量类型的字段，如：
@@ -133,9 +133,9 @@ pip install langchain-text-splitters
 
 传统的数据库，添加了向量类型的字段，在向量检索的的时候，性能没有专门的向量数据库性能好。所以就排除了传统的数据库。
 
-在开源的向量数据库中，最开始我选择的是Milvus，但是Milvus 2.3 版本不支持混合索引。
+在开源的向量数据库中，最开始我选择的是Milvus，但是Milvus 2.3 版本不支持混合索引，Milvus也不支持异步。
 
-后来调研发现qdrant的性能非常高，并且支持元数据过滤和混合索引，qdrant的部署非常轻松，所以最终选择了qdrant。
+后来调研发现qdrant的性能非常高，并且支持元数据过滤和混合索引，同时支持异步，qdrant的部署非常轻松，所以最终选择了qdrant。
 
 其中Milvus向量数据库的功能非常强大，它相比其他向量数据库支持更多的相似度检索算法和指标。
 
@@ -165,6 +165,14 @@ IVF（Inverted File）算法是一种用于高效近似最近邻搜索（Approxi
 最开始Embeding模型用的是bge-base-zh-v1.5，在我们实际的测试中，我们主观上判断有一些分片跟问题是不相关的。但是使用向量数据库检索出来是比较相似的，导致回答效果不好，将Embeding模型切换到m3e-base后，上述的问题效果就好了很多。
 
 后面发现切换到m3e-base了还是有一些问题相似度比较的不好，例如dev环境和开发环境，test环境和测试环境，这个用相似度算法算出来不相似，但是用户需要这类问题要相似性较好。就对bge-base-zh-v1.5模型做了微调，微调之后就解决了签名的问题。
+
+
+
+**注意：bg3-base和m3e-bae的input max length都为512 token，如果分片的长度大于这个，后面的内容会被忽略掉。导致向量检索的效果不好。**
+
+可以更换成bge-m3模型，这个input max length支持8192个token。
+
+或者将分片的chunk_size设置小一点，比如256。
 
 
 
@@ -368,7 +376,7 @@ Answer：
 
 
 
-另外在使用MultiQuestion的QueryTransform时，LlamaIndex框架的VectorRetriever默认会先对query进行embeding然后求均值，最后拿着求完均值之后的embeding检索。我认为应该对每一个query都去检索，将所有的query查询合并起来再去重。要实现这个效果，需要重写`_retrieve`方法。示例如下：
+另外在使用MultiQuestion的QueryTransform时，LlamaIndex框架的VectorRetriever默认会先对embedding_strs进行embeding然后求均值，最后拿着求完均值之后的embeding检索。我认为应该对每一个query都去检索，将所有的query查询合并起来再去重。要实现这个效果，需要重写`_retrieve`方法。示例如下：
 
 ```python
     def _retrieve(
@@ -577,7 +585,9 @@ Rerank模型使用的是bge-reranker-base，这个模型没有更换过其他的
 
 #### Embeding模型推理
 
-Embeding模型使用bge模型使用的是Fastchat框架部署的。huggingface官方使用Rust语言写的[text-embeddings-inference框架](https://github.com/huggingface/text-embeddings-inference)性能非常好，比使用onnx性能还要好一丢丢。后续可以尝试使用这个部署Embeding模型。
+Embeding模型使用bge模型使用的是Fastchat框架部署的。在使用m3e-base的时候Fastchat对m3e-base的支持不是很好，直接使用FastAPI封装了embeding的接口。
+
+huggingface官方使用Rust语言写的[text-embeddings-inference框架](https://github.com/huggingface/text-embeddings-inference)性能非常好，比使用onnx性能还要好一丢丢。后续可以尝试使用这个部署Embeding模型。
 
 #### LLM推理
 
@@ -587,7 +597,7 @@ chatglm3-6b和qwen1.5-7B都是使用的fastchat框架部署的。其中Fastchat�
 
 还调研过ollam框架，类似与Docker的概念。服务启动之后不能停止，只能删除，删除之后模型文件就没有了，下一次启动又要重新下载模型。体验不好就没用了。
 
-还了解过llama.cpp框架，没有实际用过。
+还了解过llama.cpp框架，可以支持CPU和GPU混合推理，据说性能很好，没有实际用过。
 
 #### Rerank模型推理
 
@@ -641,12 +651,11 @@ Atom-7B的参数量大小为 $ 7 * 10 ^ 9 $ 字节，等于 7GB 或者 6.5 GiB�
 **注意：这里计算的显存占用只考虑了模型状态，实际上还有剩余状态（包括激活值（activation）、各种临时缓冲区（buffer）以及无法使用的显存碎片（fragmentation）），以
 ZeRO-3 训练的时候，实际显存会大于 28 GB，训练可能会报OOM的错误。如果想要在ZeRO-1和ZeRO-2能够训练需要使用offload技术。**
 
-实测 XuanYuan-6B 全量二次预训练，使用2机4卡（一台服务器A100 40G*2，*一台服务器 V100 *
-2）ZeRO-3-Offload才能训练起来，而且还要将batch_size设置成1才行。执行时间非常久，训练完需要11年。
+实测 XuanYuan-6B 全量二次预训练，使用2机4卡（一台服务器A100 40G * 2，一台服务器 V100 *2）ZeRO-3-Offload才能训练起来，而且还要将batch_size设置成1才行。执行时间非常久，跑一晚上才训练700个setps，1000万调数据，训练一个epoch完需要11年。
 
 #### 微调
 
-采用QLORA微调显存资源占用不大，一张A100（40G）就可以微调7B大小的模型，几百条数据大概需要训练5个小时。
+采用LORA微调显存资源占用不大，一张A100（40G）就可以微调7B大小的模型，几百条数据大概需要训练5个小时。
 
 #### 推理
 
@@ -674,13 +683,19 @@ int4 7 * 0.5 = 3.5 GB
 
 - chatglm3-6B 使用fastchat框架显存占用14GB左右。
 
-- qwen1.5-7B 使用fastchat框架显存占用16GB左右。
-- embeding、rerank模型显存占用较小
-- qwen1.5-14B-int8，使用vllm框架推理显存占用30G左右。
+- Qwen1.5-7B 使用fastchat框架显存占用16GB左右。
+- embeding 模型(beg-base-zh)大概占用1G显存、rerank模型(bge-rerank-base)占用6G显存。
+- Qwen1.5-14B-int8，使用vllm框架推理显存占用30G左右（使用的kv-cache)占用的空间会大一些，使用Fastchat框架的model_worker启动大概占用22G显存。
 
 ### 大模型微调
 
-llama2 7B 模型使用 zero3-offload 在2张A100(40G)，2张V100（32G）多机多卡上能成功进行全量二次预训练，batch_size设置成1。
+使用LlamaFactory框架微调，将数据整理好执行llama-factory-cli启动就行。
+
+Qwen14B的模型Lora微调，单机多卡（A100 40G * 2）训练的时候显存占用大概在30个G。在加载完模型的时候会有一瞬间显存达到38G左右然后就保持在30G左右。
+
+默认情况下下使用的是torchrun命令启动的，传递deepseed JSON配置可以支持deepspeed Zero。
+
+
 
 
 
