@@ -154,6 +154,7 @@ description = ""
 authors = ["author <author@example.com>"]
 readme = "README.md"
 packages = [{include = "poetry_demo"}]
+package-model = false
 
 [tool.poetry.dependencies]
 python = "^3.11"

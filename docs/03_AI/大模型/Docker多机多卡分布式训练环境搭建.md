@@ -46,7 +46,7 @@ docker swarm init
 
 ```bash
 # IP 地址需要换成实际的IP地址
-$ docker swarm init --advertise-addr 1.1.1.14
+$ docker swarm init --advertise-addr 1.1.1.1
 Swarm initialized: current node (h077aglfoegkmire6bwab47hv) is now a manager.
 
 To add a worker to this swarm, run the following command:
@@ -75,7 +75,7 @@ This node joined a swarm as a worker.
 $ docker network create --driver=overlay --attachable dis-train
 njhxlanigtonjuvm7k5at9qi1
 # 查看当前网络列表
-$ docker network ls
+$ docker network ls=
 NETWORK ID     NAME                           DRIVER    SCOPE
 0965c4afa0dd   bridge                         bridge    local
 njhxlanigton   dis-train                      overlay   swarm

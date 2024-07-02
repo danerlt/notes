@@ -655,7 +655,14 @@ ZeRO-3 训练的时候，实际显存会大于 28 GB，训练可能会报OOM的�
 
 #### 微调
 
+
 采用LORA微调显存资源占用不大，一张A100（40G）就可以微调7B大小的模型，几百条数据大概需要训练5个小时。
+
+使用LlamaFactory框架微调，将数据整理好执行llama-factory-cli启动就行。
+
+Qwen14B的模型Lora微调，单机多卡（A100 40G * 2）训练的时候显存占用大概在30个G。在加载完模型的时候会有一瞬间显存达到38G左右然后就保持在30G左右。
+
+默认情况下下使用的是torchrun命令启动的，传递deepseed JSON配置可以支持deepspeed Zero。
 
 #### 推理
 
@@ -685,19 +692,7 @@ int4 7 * 0.5 = 3.5 GB
 
 - Qwen1.5-7B 使用fastchat框架显存占用16GB左右。
 - embeding 模型(beg-base-zh)大概占用1G显存、rerank模型(bge-rerank-base)占用6G显存。
-- Qwen1.5-14B-int8，使用vllm框架推理显存占用30G左右（使用的kv-cache)占用的空间会大一些，使用Fastchat框架的model_worker启动大概占用22G显存。
-
-### 大模型微调
-
-使用LlamaFactory框架微调，将数据整理好执行llama-factory-cli启动就行。
-
-Qwen14B的模型Lora微调，单机多卡（A100 40G * 2）训练的时候显存占用大概在30个G。在加载完模型的时候会有一瞬间显存达到38G左右然后就保持在30G左右。
-
-默认情况下下使用的是torchrun命令启动的，传递deepseed JSON配置可以支持deepspeed Zero。
-
-
-
-
+- Qwen1.5-14B-int8，使用vllm框架推理显存占用30G左右（使用的kv-cache)占用的空间会大一些，使用Fastchat框架的model_worker启动大概占用22G显存。;mount cache加快pip依赖的安装。
 
 ## 其他
 
