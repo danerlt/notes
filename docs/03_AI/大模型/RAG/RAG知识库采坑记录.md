@@ -85,6 +85,7 @@ pip install "unstructured[docx,md,pdf,csv,docx]"
 markdown加载实现示例如下：
 
 ```
+
 ```
 
 
@@ -274,24 +275,24 @@ query改写器
 3. 问题：dev环境的RabbitMQ地址是什么？回答：dev环境的RabbitMQ地址是 dev.example.com:5672。
 old_query：用户名密码是多少？
 Answer：
-```json
+​```json
 {
   "old_query": "用户名密码是多少？",
   "new_query": "dev环境的RabbitMQ的用户名密码是多少？"
 }
-```--------------------------------------------------------------------------------------------
+​```--------------------------------------------------------------------------------------------
 历史问答列表：
 1. 问题：哪一年是法国大革命开始的？回答：1789年是法国大革命的开始。
 2. 问题：艾菲尔铁塔建于哪一年？回答：艾菲尔铁塔建于1889年。
 3. 问题：中华人民共和国是哪一年成立的？回答：中华人民共和国成立于1949年。
 old_query：Redis的用户名密码是多少？
 Answer：
-```json
+​```json
 {
   "old_query": "Redis的用户名密码是多少？",
   "new_query": "Redis的用户名密码是多少？"
 }
-```--------------------------------------------------------------------------------------------
+​```--------------------------------------------------------------------------------------------
 ## History and old query
 历史问答列表：
 {{ historys }}
@@ -611,7 +612,7 @@ Rerank模型是使用FastAPI框架将`SentenceTransformers `做了一下封装�
 
 大模型训练一般都是使用的混合精度和Adam优化器。
 
-假设模型的参数W大小是 $\Phi$ ，**以byte为单位**，存储如下：
+假设模型的参数W大小是 $ \Phi $ ，**以byte为单位**，存储如下：
 
 ![img](https://danerlt-1258802437.cos.ap-chongqing.myqcloud.com/images/v2-2fa670488fcc2408bd27bdcfec283d33_720w.webp)
 
@@ -648,8 +649,7 @@ Atom-7B的参数量大小为 $ 7 * 10 ^ 9 $ 字节，等于 7GB 或者 6.5 GiB�
 - ZeRO-2 内存占用： $ 2*7 + \frac{(2+12)*7}{4} = 38.5 $ GB，每张卡需要 38.5GB 显存，A100能够训练，超出了V100的显存，无法训练。
 - ZeRO-3 内存占用： $ \frac{(2+2+12)*7}{4} = 28 $ GB，每张卡需要 28 GB 显存，能够训练。
 
-**注意：这里计算的显存占用只考虑了模型状态，实际上还有剩余状态（包括激活值（activation）、各种临时缓冲区（buffer）以及无法使用的显存碎片（fragmentation）），以
-ZeRO-3 训练的时候，实际显存会大于 28 GB，训练可能会报OOM的错误。如果想要在ZeRO-1和ZeRO-2能够训练需要使用offload技术。**
+**注意：这里计算的显存占用只考虑了模型状态，实际上还有剩余状态（包括激活值（activation）、各种临时缓冲区（buffer）以及无法使用的显存碎片（fragmentation）），以ZeRO-3 训练的时候，实际显存会大于 28 GB，训练可能会报OOM的错误。如果想要在ZeRO-1和ZeRO-2能够训练需要使用offload技术。**
 
 实测 XuanYuan-6B 全量二次预训练，使用2机4卡（一台服务器A100 40G * 2，一台服务器 V100 *2）ZeRO-3-Offload才能训练起来，而且还要将batch_size设置成1才行。执行时间非常久，跑一晚上才训练700个setps，1000万调数据，训练一个epoch完需要11年。
 
@@ -692,7 +692,7 @@ int4 7 * 0.5 = 3.5 GB
 
 - Qwen1.5-7B 使用fastchat框架显存占用16GB左右。
 - embeding 模型(beg-base-zh)大概占用1G显存、rerank模型(bge-rerank-base)占用6G显存。
-- Qwen1.5-14B-int8，使用vllm框架推理显存占用30G左右（使用的kv-cache)占用的空间会大一些，使用Fastchat框架的model_worker启动大概占用22G显存。;mount cache加快pip依赖的安装。
+- Qwen1.5-14B-int8，使用vllm框架推理显存占用30G左右（使用的kv-cache)占用的空间会大一些，使用Fastchat框架的model_worker启动大概占用22G显存
 
 ## 其他
 
@@ -742,4 +742,4 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 ## 参考资料：
 
 - [如何选择向量数据库](https://blog.lidaxia.io/2024/05/07/vector-db-selection/)
-- [一文通透Text Embedding模型：从text2vec、openai-text embedding到m3e、bge(https://blog.csdn.net/v_JULY_v/article/details/135311471)
+- [一文通透Text Embedding模型：从text2vec、openai-text embedding到m3e、bge](https://blog.csdn.net/v_JULY_v/article/details/135311471)
