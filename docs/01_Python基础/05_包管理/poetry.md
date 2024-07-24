@@ -224,6 +224,9 @@ poetry config cache-dir "D:\Program Files\poetry\"
 # poetry 设置本地pypi源 设置清华大学源：
 poetry config repositories.pypi "https://pypi.tuna.tsinghua.edu.cn/simple"
 
+# poetry 设置本地pypi源 腾讯源
+poetry config repositories.pypi "http://mirrors.tencentyun.com/pypi/simple"
+
 # 在项目中创建虚拟环境
 poetry config virtualenvs.in-project true
 ```
