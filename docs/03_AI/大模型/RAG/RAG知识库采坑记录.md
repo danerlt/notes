@@ -880,7 +880,11 @@ Atom-7B的参数量大小为 $ 7 * 10 ^ 9 $ 字节，等于 7GB 或者 6.5 GiB�
 
 采用LORA微调显存资源占用不大，一张A100（40G）就可以微调7B大小的模型，几百条数据大概需要训练5个小时。
 
+
+
 LoRA的原理是在原来的模型中的Linner、Embedding、Cov2d、Cov1d层，将这些层改成LoRALayter。LoRALayer中会将原来的参数冻结，然后添加两个低秩的矩阵A，B，在训练的时候会更新两个小矩阵，然后推理的时候会通过原来的权重和小矩阵的结果一起计算。
+
+在LlamaFactory框架中调用了`peft`这个框架做LoRA的微调，LlamaFactory中制作了LoRAConfig的的封装，然后通过`get_peft_model`获取修改模型结构之后的model。
 
 使用LlamaFactory框架微调，将数据整理好执行llama-factory-cli启动就行。
 
