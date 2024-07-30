@@ -109,8 +109,9 @@ pip install langchain-text-splitters
 注意点：
 
 - 对于CSV，EXCEL文件常见的方案是将一行当作一个chunk。
-- 对于markdown格式，在加载的时候处理好，不进行分片。
+- 对于markdown格式，在加载的时候处理好,通过`#`号，将标题和下面的内容分成一个chunk，不进行分片。
 - SentenceSplitter和RecursiveCharacterTextSplitter原理一样，先拆成最小的句子，然后合并到chunk_size大小。
+- RecursiveCharacterTextSplitter是递归的进行分片，先通过两个或三个换行符拆分成比较大的chunk，然后在通过一个换行符分成比较小的chunk，然后通过句号、感叹号、问题，逗号，空格等拆成更小的句子。然后在按照chunk_size和overlap合并成一个大小不超过chunk_size的一个大的文本。
 
 ## 构建索引
 
@@ -134,11 +135,11 @@ pip install langchain-text-splitters
 
 传统的数据库，添加了向量类型的字段，在向量检索的的时候，性能没有专门的向量数据库性能好。所以就排除了传统的数据库。
 
-在开源的向量数据库中，最开始我选择的是Milvus，但是Milvus 2.3 版本不支持混合索引，Milvus也不支持异步。
+在开源的向量数据库中，最开始我选择的是Milvus 2.3版本，Milvus支持metadata filter（元数据过滤），但是Milvus 2.3 版本不支持异步，也不支持Hybrid Search（混合检索）。
 
-后来调研发现qdrant的性能非常高，并且支持元数据过滤和混合索引，同时支持异步，qdrant的部署非常轻松，所以最终选择了qdrant。
+后来调研发现qdrant的性能非常高，Qdrant采用Rust语言编写，支持Metadata filter（元数据过滤）和Hybrid Search（混合检索），同时支持异步，qdrant的部署非常轻松，直接使用Docker-compose部署一个service就可以，Milvus还需要依赖etcd和MinIO。所以最终选择了qdrant。
 
-其中Milvus向量数据库的功能非常强大，它相比其他向量数据库支持更多的相似度检索算法和指标。
+其实Milvus向量数据库的功能非常强大，它相比其他向量数据库支持更多的相似度检索算法和指标。在2024年4月份发布的2.4版本也支持了Hybrid Search，但是还是不支持异步。
 
 
 ### 相似度算法和指标选择
@@ -161,19 +162,22 @@ IVF（Inverted File）算法是一种用于高效近似最近邻搜索（Approxi
 
 参考链接： [如何选择RAG的Embedding模型？](https://techdiylife.github.io/blog/blog.html?category1=c02&blogid=0047)
 
-我们项目中使用了bge-base-zh-v1.5和m3e-base。最近出来的bge-m3和bce-embedding-base_v1也比较火，可以尝试使用。
+开始我们使用的是m3e-base模型，我们实际的测试中，我们主观上判断有一些分片跟问题是不相关的。但是使用向量数据库检索出来是比较相似的，导致回答效果不好，将Embeding模型切换到beg-base-zh-v1.5之后，上述的问题效果就好了很多。
 
-最开始Embeding模型用的是bge-base-zh-v1.5，在我们实际的测试中，我们主观上判断有一些分片跟问题是不相关的。但是使用向量数据库检索出来是比较相似的，导致回答效果不好，将Embeding模型切换到m3e-base后，上述的问题效果就好了很多。
+后面发现切换到beg-base-zh-v1.5了还是有一些问题相似度比较的不好，例如dev环境和开发环境，test环境和测试环境，这个用相似度算法算出来不相似，但是用户需要这类问题要相似性较好。就对bge-base-zh-v1.5模型做了微调，微调之后就解决了前面的的问题。
 
-后面发现切换到m3e-base了还是有一些问题相似度比较的不好，例如dev环境和开发环境，test环境和测试环境，这个用相似度算法算出来不相似，但是用户需要这类问题要相似性较好。就对bge-base-zh-v1.5模型做了微调，微调之后就解决了签名的问题。
+在2024年1月份，bge发布了bge-m3模型，这个模型支持input长度最大为8192个token，bge-base和m3e-base都是512个token。bge-m3有1024维，bge-base和m3e-base都只有768维。并且bge-m3这一个模型encode之后可以输出稠密的向量和稀疏的向量，可以和向量数据库的Hybrid Search结合起来使用。
+
+后面我们更换到了这个模型，并且配套的Rerank模型也切换到了bge-reranker-v2-m3。
+切换到bge-m3之后，针对dev环境和开发环境不相似的问题也没有遇到。
 
 
 
-**注意：bg3-base和m3e-bae的input max length都为512 token，如果分片的长度大于这个，后面的内容会被忽略掉。导致向量检索的效果不好。**
+**注意：**
 
-可以更换成bge-m3模型，这个input max length支持8192个token。
-
-或者将分片的chunk_size设置小一点，比如256。
+- bg3-base和m3e-bae的input max length都为512 token，如果分片的长度大于这个，后面的内容会被截断。导致向量检索的效果不好。
+- 切换模型之后，向量数据库中的Embedding数据需要重新用新的模型重新生成，如果模型的维度发生变化之后，需要将向量数据库库中对应的collection先删除再重新生成。
+- 我们项目中是使用自定义的reset-dataset命令重新生成的，这个命令会先去删除向量数据库和MongoDB中的旧数据，这个时候向量数据库中的collection已经被删除了，再删除数据的时候会报错，自定义命令需要考虑这种异常情况。
 
 
 
@@ -188,11 +192,11 @@ IVF（Inverted File）算法是一种用于高效近似最近邻搜索（Approxi
 
 ![image-20240619164119734](https://danerlt-1258802437.cos.ap-chongqing.myqcloud.com/images/image-20240619164119734.png)
 
-最开始我们只使用了milvus向量数据库，用Milvus同时存储向量和文档数据。
+最开始我们只使用了milvus向量数据库，用Milvus同时存储向量和文档数据，后面切换到了Qdrant向量数据库。
 
 在添加Bm25检索的时候发现，BM25检索需要将所有的text先查询出来，然后使用BM25算法计算分数。LlamaIndex中的VectorRetriever在检索的时候必须通过向量字段+metadata字段（一般是JSON格式）才能过滤，如果要去掉向量字段，需要根据向量数据库的接口去开发过滤的方法，比较麻烦。同时，向量数据库在对metadata字段过滤的时候，性能没有传统的数据库性能好。
 
-然后我将Document Store加上了，并且使用postgreSQL数据库充当Document Store，用Redis作为Index Store。然后发现在查询文档的时候，node的格式是一个层数较多的JSON，使用postgreSQL查询性能慢，查询SQL编写复杂。于是将postgreSQL数据库更换成对JSON格式更友好的MongoDB数据库。使用MongoDB存储分配后的node数据，并且MongoDB可以针对JSON中的某些字段创建索引来加快查询速度。
+然后我将Document Store加上了，并且使用postgreSQL数据库充当Document Store，用Redis作为Index Store。然后发现在查询文档的时候，node的格式是一个层数较多的JSON，使用postgreSQL查询性能慢，查询SQL编写复杂。于是将postgreSQL数据库更换成对JSON格式更友好的MongoDB数据库。使用MongoDB存储分片的node数据（MongoDB中不包含Embedding，Qdrant中包含了Embedding），并且MongoDB可以针对JSON中的某些字段创建索引来加快查询速度。
 
 在我们的项目中，用户需要新建一个数据集，然后对这个数据集上传多个文件。用户在对话的时候必须选择某一个数据集进行对话。
 
@@ -203,14 +207,174 @@ IVF（Inverted File）算法是一种用于高效近似最近邻搜索（Approxi
 为了解决这个问题，我将数据集ID，文件ID，文件名等放到node对象的metadata属性中，然后存储到MongoDB和向量数据库的时候都会存储到。在检索的时候添加根据数据集ID过滤的条件。
 
 
+向量数据库添加dataset_id过滤的示例代码如下，重点是重写了`_retrieve`方法，添加了`dataset_id`参数。其中调用了`_get_nodes_with_embeddings`方法，这个方法也添加了`dataset_id`参数。然后在`_build_vector_store_query`方法中通过添加了`dataset_id`相关的`MetadataFilter`。
 
-后来调研发现qdrant的性能比milvus更好，并且qdrant支持Hybrid Search，Milvus不支持。就将向量数据库切换到了Qdrant了。（PS：我们最开始使用的Milvus版本是2.3，它还不支持Hybrid Search，2.4版本已经支持了）
-
-
-
-
+```python
+class VectorStoreRetriever(KaBaseRetriever):
 
 
+    def _retrieve(
+            self,
+            query_bundle: QueryBundle,
+            dataset_id: str = None
+    ) -> List[NodeWithScore]:
+        logger.debug(f"Vector _retrieve: {dataset_id=}, {query_bundle.query_str=}, {query_bundle.embedding_strs=}")
+        logger.debug(f"is_embedding_query: {self._vector_store.is_embedding_query}")
+        res = []
+        if self._vector_store.is_embedding_query:
+            if query_bundle.embedding is None and len(query_bundle.embedding_strs) > 0:
+                for embedding_str in query_bundle.embedding_strs:
+                    new_query_bundle = QueryBundle(query_str=embedding_str)
+                    new_query_bundle.embedding = self._embed_model.get_text_embedding(
+                        embedding_str
+                    )
+                    one_query_res = self._get_nodes_with_embeddings(
+                        new_query_bundle, dataset_id=dataset_id
+                    )
+                    res.extend(one_query_res)
+            else:
+                res = self._get_nodes_with_embeddings(query_bundle, dataset_id=dataset_id)
+        else:
+            res = self._get_nodes_with_embeddings(query_bundle, dataset_id=dataset_id)
+        logger.debug(f"Vector _retrieve before filter: {len(res)=}")
+        return res
+
+    def _get_nodes_with_embeddings(
+            self, query_bundle_with_embeddings: QueryBundle,
+            dataset_id: str = None
+    ) -> List[NodeWithScore]:
+        query = self._build_vector_store_query(query_bundle_with_embeddings, dataset_id=dataset_id)
+        query_result = self._vector_store.query(query, **self._kwargs)
+        return self._build_node_list_from_query_result(query_result)
+
+    def _build_vector_store_query(
+            self, query_bundle_with_embeddings: QueryBundle,
+            dataset_id: str = None
+    ) -> VectorStoreQuery:
+        query = VectorStoreQuery(
+            query_embedding=query_bundle_with_embeddings.embedding,
+            similarity_top_k=self._similarity_top_k,
+            node_ids=self._node_ids,
+            doc_ids=self._doc_ids,
+            query_str=query_bundle_with_embeddings.query_str,
+            mode=self._vector_store_query_mode,
+            alpha=self._alpha,
+            filters=self._filters,
+            sparse_top_k=self._sparse_top_k,
+        )
+
+        if dataset_id:
+            dataset_filter = MetadataFilter(key="dataset_id", value=dataset_id, operator=FilterOperator.EQ)
+            if query.filters is None:
+                query.filters = MetadataFilters(
+                    filters=[dataset_filter], condition=FilterCondition.AND
+                )
+            else:
+                q_filters = query.filters.filters
+                q_filters.append(dataset_filter)
+                query.filters = MetadataFilters(filters=[q_filters], condition=FilterCondition.AND)
+        return query        
+   
+```        
+
+BM25Retrievar代码示例如下，也是在`_retrieve`方法中添加了`dataset_id`参数，`_retrieve`方法中调用了`get_nodes`方法，`get_nodes`方法中调用了`doc_store`的`get_docs`方法：
+```python
+class BM25Retriever(KaBaseRetriever):
+    """
+    实例化时需要传 dataset_id 获取对应的nodes
+    """
+
+    def get_nodes(self, dataset_id: str) -> List[TextNode]:
+        nodes = self.doc_store.get_docs(dataset_id=dataset_id)
+        return nodes
+
+
+    def _retrieve(self, query_bundle: QueryBundle, dataset_id: str = None) -> List[NodeWithScore]:
+        logger.debug(f"BM25 _retrieve: {dataset_id=}, {query_bundle.query_str=}, {query_bundle.embedding_strs=}")
+        nodes = self.get_nodes(dataset_id=dataset_id)
+        logger.debug(f"BM25 _retrieve nodes length: {len(nodes)}")
+        if nodes:
+            scred_nodes = bm25_utils.get_scored_nodes(query=query_bundle.query_str, nodes=nodes)
+            # 去除分数为0.0的数据
+            remoeve_nodes = [node for node in scred_nodes if node.score > 0.0]
+            top_k_nodes = remoeve_nodes[: self._similarity_top_k]
+            logger.debug(f"BM25 _retrieve before mean filter: {len(top_k_nodes)=}")
+            return top_k_nodes
+        else:
+            logger.warning("BM25 _retrieve nodes is empty list")
+            return []
+
+```
+
+其中MongoDB对应的doc_sotre的实现如下：
+```python
+class KaMongoDocumentStore(MongoDocumentStore):
+
+    def get_docs(self, dataset_id: str = None, file_id: str = None) -> t.List[Document]:
+        """获取documents
+
+        Args:
+            dataset_id(str): 数据集ID
+            file_id(str): 文件ID
+
+        Returns:
+
+        """
+        db: Database = self._kvstore._db
+        collection: Collection = db[self._node_collection]
+        find_filter = {}
+        if dataset_id:
+            find_filter.update({"__data__.metadata.dataset_id": dataset_id})
+        if file_id:
+            find_filter.update({"__data__.metadata.file_id": file_id})
+        results = collection.find(find_filter)
+        res = []
+        for result in results:
+            _ = result.pop("_id")
+            doc = json_to_doc(result)
+            res.append(doc)
+        return res
+```
+
+其中PostgreSQL对应的doc_store实现如下：
+
+```python
+class KaPostgresDocumentStore(PostgresDocumentStore):
+
+    def get_docs(self, dataset_id: str = None, file_id: str = None):
+        """获取documents
+
+        Args:
+            dataset_id: 数据集ID
+            file_id: 文件ID
+
+        Returns:
+
+        """
+        # 通过sql查询出对应的数据
+        # SELECT *
+        # FROM data_docstore
+        # WHERE value->'__data__'->'metadata'->>'dataset_id' = '39c2f32e-eb6f-437d-9cfc-557287554219';
+        # TODO postgreSQL 这里会有性能问题，需要优化，具体可参考 KaMongoDocumentStore
+        docs = self.docs
+        nodes = []
+        for i, doc in docs.items():
+            d_id = doc.metadata.get("dataset_id", None)
+            f_id = doc.metadata.get("file_id", None)
+            if dataset_id and file_id:
+                if d_id == dataset_id and f_id == file_id:
+                    nodes.append(doc)
+            elif dataset_id and not file_id:
+                if d_id == dataset_id:
+                    nodes.append(doc)
+            elif not dataset_id and file_id:
+                if f_id == file_id:
+                    nodes.append(doc)
+            else:
+                nodes.append(doc)
+
+        return nodes
+```
 
 ## 检索前处理
 
@@ -328,6 +492,43 @@ Answer：
 - MultiQuestion：使用大模型针对query生成多个相似的问题，然后根据原问题和相似的问题去检索。**实测这种方法能提高一些检索的精度，但是这种方法多了一次大模型接口调用，会导致接口的响应时间变长，需要实际时间情况选择。在我们的项目中没有使用这种方法。**
 
 可以参考 [https://github.com/langchain-ai/rag-from-scratch/blob/main/rag_from_scratch_5_to_9.ipynb](https://github.com/langchain-ai/rag-from-scratch/blob/main/rag_from_scratch_5_to_9.ipynb) 查看更多详细信息。
+
+
+注意：在使用多个Query进行检索的时候，LlamaIndex框架中的VectorRetriever默认会将多个Query进行Embedding然后求平均值，然后拿着求平均值之后的Embedding去向量数据库中检索。这里我们做了优化，我们是根据每个Query进行检索，然后将结果加到到一个集合中。
+
+注意，这个地方没有进行去重，主要有2个原因：
+1. 有MRR的后处理，如果这里去重了就会导致MRR的后处理无法生效。
+2. 有单独的去重后处理操作。
+
+```python
+
+    def _retrieve(
+            self,
+            query_bundle: QueryBundle,
+            dataset_id: str = None
+    ) -> List[NodeWithScore]:
+        logger.debug(f"Vector _retrieve: {dataset_id=}, {query_bundle.query_str=}, {query_bundle.embedding_strs=}")
+        logger.debug(f"is_embedding_query: {self._vector_store.is_embedding_query}")
+        res = []
+        if self._vector_store.is_embedding_query:
+            if query_bundle.embedding is None and len(query_bundle.embedding_strs) > 0:
+                for embedding_str in query_bundle.embedding_strs:
+                    new_query_bundle = QueryBundle(query_str=embedding_str)
+                    new_query_bundle.embedding = self._embed_model.get_text_embedding(
+                        embedding_str
+                    )
+                    one_query_res = self._get_nodes_with_embeddings(
+                        new_query_bundle, dataset_id=dataset_id
+                    )
+                    res.extend(one_query_res)
+            else:
+                res = self._get_nodes_with_embeddings(query_bundle, dataset_id=dataset_id)
+        else:
+            res = self._get_nodes_with_embeddings(query_bundle, dataset_id=dataset_id)
+        logger.debug(f"Vector _retrieve before filter: {len(res)=}")
+        return res
+
+```
 
 
 
@@ -560,6 +761,15 @@ bm25_utils = Bm25Utils()
 
 Langchain和llamaIndex的prompt模板中默认都是使用f-string去格式化的。如果提示词模板中出现了大括号如`{xxx}`，就会格式化报错。Langchain框架可以通过参数设置成jinja2来格式化。LlamaIndex框架暂时没有修复这个问题。
 
+提示词模板优化技巧
+
+- 分片之间添加分隔符，HTML标签等
+- 添加角色和任务描述
+- few-shot 添加相似样例，可以就静态也可以是动态
+- Chain-of-thought
+- 添加限制，必须怎么怎么样、不要怎么怎么样、禁止怎么怎么样
+- 添加输入输出格式的描述
+
 
 
 ## 大模型相关
@@ -574,11 +784,11 @@ Langchain和llamaIndex的prompt模板中默认都是使用f-string去格式化�
 
 #### Embedding模型
 
-Embeding模型从bge-base-zh到m3e-base到微调beg-base-zh。
+Embeding模型从m3e-base，到bge-base-zh-v1.5到微调beg-base-zh再到bge-m3。
 
 #### Rerank模型
 
-Rerank模型使用的是bge-reranker-base，这个模型没有更换过其他的，也没进行微调。实测下来在重排的时候，有些文档跟query其实不是特别的相关，但是rerank的分数比较高。还遇到过最相关的文档分数不是最高的，在倒数第3的问题。为了在垂直领域效果更好，可能需要对rerank模型进行微调。
+Rerank模型开始使用的是bge-reranker-base，后面使用的是bge-reranker-v2-m3，这个模型没有更换过其他的，也没进行微调。实测下来在重排的时候，有些文档跟query其实不是特别的相关，但是rerank的分数比较高。还遇到过最相关的文档分数不是最高的，在倒数第3的问题。为了在垂直领域效果更好，可能需要对rerank模型进行微调。
 
 
 
@@ -586,9 +796,21 @@ Rerank模型使用的是bge-reranker-base，这个模型没有更换过其他的
 
 #### Embeding模型推理
 
-Embeding模型使用bge模型使用的是Fastchat框架部署的。在使用m3e-base的时候Fastchat对m3e-base的支持不是很好，直接使用FastAPI封装了embeding的接口。
+Embeding模型使用bge模型使用的是Fastchat框架部署的。在使用m3e-base的时候Fastchat对m3e-base的支持不是很好，直接使用FastAPI和`SentenceTransformers`封装了一下然后提供embeding的接口。
 
 huggingface官方使用Rust语言写的[text-embeddings-inference框架](https://github.com/huggingface/text-embeddings-inference)性能非常好，比使用onnx性能还要好一丢丢。后续可以尝试使用这个部署Embeding模型。
+
+
+注意：这里开始使用了Flask框架和Gunicorn库封装接口，但是当worker数量大于1的时候，使用Gunicorn框架会报`RuntimeError: Cannot re-initialize CUDA in forked subprocess. To use CUDA with multiprocessing, you must use the 'spawn' start method`。
+
+原因是Gunicorn的启动Web服务的时候，Gunicorn 默认会使用 `fork` 的方式创建进程。在调用接口的时候会报错`RuntimeError: Cannot re-initialize CUDA in forked subprocess. To use CUDA with multiprocessing, you must use the 'spawn' start method`。
+
+解决办法：
+
+- 使用uvicorn框架和fastapi框架启动，启动的时候可以制定多个进程，如果指定多个进程，GPU上会加载多次模型，对显存会有影响。参数格式如：`uvicorn main:app --host 0.0.0.0 --port 5000 --loop uvloop --workers 4`
+- 或者使用Gunicorn框架启动的时候指定只启动一个进程，Gunicorn启动多个进程还是会出现上面的错误，只能指定一个进程。参数格式如：`gunicorn -w 1 -b 0.0.0.0:5000 main:app`
+- 使用uwsgi框架启动，在指定了只启动一个进程，并且不能加上`--master参数`。uwsgi框架指定`--master`参数也会出现上面的错误，指定多个进程也会出现上面的错误。参数格式如：`uwsgi --http 0.0.0.0:5000 -p 1 -w main:app --enable-threads`
+
 
 #### LLM推理
 
@@ -658,6 +880,8 @@ Atom-7B的参数量大小为 $ 7 * 10 ^ 9 $ 字节，等于 7GB 或者 6.5 GiB�
 
 采用LORA微调显存资源占用不大，一张A100（40G）就可以微调7B大小的模型，几百条数据大概需要训练5个小时。
 
+LoRA的原理是在原来的模型中的Linner、Embedding、Cov2d、Cov1d层，将这些层改成LoRALayter。LoRALayer中会将原来的参数冻结，然后添加两个低秩的矩阵A，B，在训练的时候会更新两个小矩阵，然后推理的时候会通过原来的权重和小矩阵的结果一起计算。
+
 使用LlamaFactory框架微调，将数据整理好执行llama-factory-cli启动就行。
 
 Qwen14B的模型Lora微调，单机多卡（A100 40G * 2）训练的时候显存占用大概在30个G。在加载完模型的时候会有一瞬间显存达到38G左右然后就保持在30G左右。
@@ -706,7 +930,7 @@ evaluate 的时候由于`llama-index-core`在`0.10.34`
 ，导致评估在本地测试运行正常，在服务器上使用Docker运行一直报错。
 
 我给官方提交了bug [[Bug]: retrieval evaluation hit rate error
-](https://github.com/run-llama/llama_index/issues/13926), 截止2024-6-14，这个BUG还没有修复。
+](https://github.com/run-llama/llama_index/issues/13926), 截止2024-7-30，这个BUG还没有修复。
 
 其`pyproject.toml`文件如下
 
