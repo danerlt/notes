@@ -1,0 +1,68 @@
+# LangChain Core包
+
+安装：
+
+```bash
+pip install langchain-core
+```
+
+
+
+LangChain Core包含为LangChain生态系统的其余部分提供动力的基础抽象。这些抽象被设计为尽可能模块化和简单。这些抽象的示例包括LLM、文档加载器、嵌入模型、向量存储、检索器等的抽象。拥有这些抽象的好处是，任何提供者都可以实现所需的接口，然后很容易在LangChain生态系统的其余部分中使用。
+
+其目录结构如下：
+
+```bash
+E:\workspace\langchain\libs\core>tree2 -L 2
+.
+├── Makefile
+├── README.md
+├── extended_testing_deps.txt
+├── langchain_core                            # langchain_core 包 Python代码
+│   ├── __init__.py
+│   ├── _api                                  # langchain_core内部的一些模块，导包告警、路径、装饰器等
+│   ├── agents.py                             # 跟Agent相关的父类和一些convert函数
+│   ├── beta                                  # 一些还没上莨快连】平【
+│   ├── caches.py
+│   ├── callbacks
+│   ├── chat_history.py
+│   ├── chat_loaders.py
+│   ├── chat_sessions.py
+│   ├── document_loaders
+│   ├── documents
+│   ├── embeddings
+│   ├── env.py
+│   ├── example_selectors
+│   ├── exceptions.py
+│   ├── globals.py
+│   ├── graph_vectorstores
+│   ├── indexing
+│   ├── language_models
+│   ├── load
+│   ├── memory.py
+│   ├── messages
+│   ├── output_parsers
+│   ├── outputs
+│   ├── prompt_values.py
+│   ├── prompts
+│   ├── py.typed
+│   ├── pydantic_v1
+│   ├── retrievers.py
+│   ├── runnables
+│   ├── stores.py
+│   ├── structured_query.py
+│   ├── sys_info.py
+│   ├── tools.py
+│   ├── tracers
+│   ├── utils
+│   └── vectorstores
+├── poetry.lock                                    # poetry lock文件
+├── pyproject.toml                                 # poetry 项目文件
+├── scripts                                        # 一些测试脚本，检查导包、lint等
+└── tests                                          # 测试代码
+    ├── __init__.py
+    ├── integration_tests
+    └── unit_tests
+
+```
+

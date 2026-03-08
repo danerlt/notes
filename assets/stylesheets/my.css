@@ -1,0 +1,18 @@
+blockquote.page-time {
+    margin: 20px 0 !important;
+    border-left-color: #64b5f6 !important;
+    /* Just change the color value and that's it*/
+}
+
+blockquote.page-copyright {
+    margin: 20px 0 !important;
+    border-left-color: #ff1700 !important;
+    /* Just change the color value and that's it*/
+}
+
+blockquote.page-copyright i.md-icon {
+    display: inline-block;
+    margin-right: 5px;
+    transform: translateY(3.5px);
+    width: 18px;
+}
