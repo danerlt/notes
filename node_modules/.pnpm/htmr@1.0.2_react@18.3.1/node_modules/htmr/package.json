@@ -1,0 +1,92 @@
+{
+  "name": "htmr",
+  "version": "1.0.2",
+  "description": "Simple and lightweight (< 2kB) HTML to React converter that works in server and browser",
+  "main": "lib/htmr.js",
+  "browser": "lib/htmr.browser.js",
+  "react-native": "lib/htmr.js",
+  "types": "index.d.ts",
+  "files": [
+    "lib",
+    "src/types.ts",
+    "index.d.ts"
+  ],
+  "scripts": {
+    "_postinstall": "husky install",
+    "prepublishOnly": "pinst --disable",
+    "postpublish": "pinst --enable",
+    "bench": "node benchmark",
+    "build": "rollup -c",
+    "clean": "rimraf lib",
+    "fmt": "prettier --write \"**/*.{js,md}\"",
+    "prepare": "npm-run-all clean typecheck build",
+    "test": "npm-run-all clean build && npm-run-all -p test:coverage test:size typecheck bench",
+    "test:coverage": "jest --coverage --no-cache --ci --runInBand",
+    "test:watch": "jest --watch --no-cache",
+    "test:size": "bundlesize",
+    "typecheck": "tsc --noEmit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pveyes/htmr.git"
+  },
+  "keywords": [
+    "html-to-react",
+    "html",
+    "to",
+    "react",
+    "simple",
+    "lightweight",
+    "universal",
+    "server",
+    "browser",
+    "convert",
+    "mapping"
+  ],
+  "author": "Fatih Kalifa <fatihkalifa@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pveyes/htmr/issues"
+  },
+  "homepage": "https://github.com/pveyes/htmr#readme",
+  "dependencies": {
+    "html-entities": "^2.1.0",
+    "htmlparser2": "^6.0.0"
+  },
+  "peerDependencies": {
+    "react": ">=15.6.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.17",
+    "@babel/preset-env": "^7.12.17",
+    "@babel/preset-react": "^7.12.13",
+    "@babel/preset-typescript": "^7.12.17",
+    "@testing-library/react": "^11.2.5",
+    "@types/react": "^17.0.2",
+    "benchmark": "^2.1.4",
+    "bundlesize": "^0.17.1",
+    "common-tags": "^1.8.0",
+    "domhandler": "^4.0.0",
+    "husky": "^5.0.9",
+    "jest": "^26.6.3",
+    "npm-run-all": "^4.0.2",
+    "pinst": "^2.1.4",
+    "prettier": "^2.2.1",
+    "pretty-quick": "^3.1.0",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "react-test-renderer": "^17.0.1",
+    "rimraf": "^2.6.1",
+    "rollup": "^1.10.1",
+    "rollup-plugin-json": "^4.0.0",
+    "rollup-plugin-terser": "^5.0.0",
+    "rollup-plugin-typescript2": "^0.21.0",
+    "typescript": "^4.1.5"
+  },
+  "bundlesize": [
+    {
+      "path": "./lib/htmr.browser.js",
+      "maxSize": "2 kB"
+    }
+  ]
+}
