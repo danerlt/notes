@@ -1,0 +1,14 @@
+#!/bin/sh
+# 推送前自动更新导航栏配置
+
+cd "$(git rev-parse --show-toplevel)"
+
+echo "🔄 正在更新导航栏..."
+node scripts/gen-nav.mjs
+
+if ! git diff --quiet rspress.config.ts; then
+  echo "📝 导航有变化，自动提交..."
+  git add rspress.config.ts
+  git commit -m "chore: auto update nav from docs structure"
+  echo "✓ 已提交导航更新"
+fi
